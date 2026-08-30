@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Host {
+  id        String    @id @default(cuid())
+  name      String
+  contact   String?
+  createdAt DateTime  @default(now())
+  sessions  Session[]
+}
+
+enum SessionStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum GenderRule {
+  MIXED
+  SAME_GENDER_ONLY
+  SINGLES_ONLY
+}
+
+model Session {
+  id                      String        @id @default(cuid())
+  hostId                  String
+  host                    Host          @relation(fields: [hostId], references: [id])
+  name                    String
+  status                  SessionStatus @default(ACTIVE)
+  genderRule              GenderRule    @default(MIXED)
+  skillMatchmakingEnabled Boolean       @default(true)
+  createdAt               DateTime      @default(now())
+  players                 Player[]
+  matches                 Match[]
+}
+
+enum SkillTier {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  UNKNOWN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNSPECIFIED
+}
+
+enum PlayerStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Player {
+  id            String        @id @default(cuid())
+  sessionId     String
+  session       Session       @relation(fields: [sessionId], references: [id])
+  name          String
+  gender        Gender        @default(UNSPECIFIED)
+  skillTier     SkillTier     @default(UNKNOWN)
+  rating        Float
+  status        PlayerStatus  @default(ACTIVE)
+  matchesPlayed Int           @default(0)
+  lastPlayedAt  DateTime?
+  createdAt     DateTime      @default(now())
+  matchPlayers  MatchPlayer[]
+
+  @@index([sessionId])
+}
+
+enum MatchStatus {
+  PENDING
+  COMPLETED
+}
+
+model Match {
+  id          String        @id @default(cuid())
+  sessionId   String
+  session     Session       @relation(fields: [sessionId], references: [id])
+  matchNumber Int
+  status      MatchStatus   @default(PENDING)
+  createdAt   DateTime      @default(now())
+  completedAt DateTime?
+  players     MatchPlayer[]
+  result      MatchResult?
+
+  @@unique([sessionId, matchNumber])
+}
+
+enum Side {
+  A
+  B
+}
+
+model MatchPlayer {
+  matchId  String
+  match    Match  @relation(fields: [matchId], references: [id])
+  playerId String
+  player   Player @relation(fields: [playerId], references: [id])
+  side     Side
+
+  @@id([matchId, playerId])
+  @@index([playerId])
+}
+
+model MatchResult {
+  matchId     String @id
+  match       Match  @relation(fields: [matchId], references: [id])
+  winningSide Side
+  score       String?
+}

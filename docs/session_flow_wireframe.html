@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Session flow wireframe</title>
+<style>
+  :root{
+    --bg:#faf9f7; --card:#ffffff; --border:#e2e0db; --border-strong:#c9c6bf;
+    --text:#1c1b18; --text-muted:#8a877e; --accent:#2f6f4f; --accent-bg:#e7f1ec;
+    --warn:#8a5a12; --warn-bg:#fbf0dd; --success:#2f6f4f; --success-bg:#e7f1ec;
+  }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding:32px 16px 64px;
+  }
+  .cap{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+  .phone{width:280px;margin:0 auto;border:1px solid var(--border-strong);border-radius:22px;background:var(--card);padding:14px;box-sizing:border-box;}
+  .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;margin:16px 0;font-size:12px;color:var(--text-muted);}
+  .arrow .tri{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid var(--border-strong);}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;font-size:13px;border-bottom:1px solid var(--border);}
+  .row:last-child{border-bottom:none;}
+  .pill{font-size:11px;padding:2px 8px;border-radius:6px;white-space:nowrap;}
+  .btn{width:100%;padding:10px;border-radius:8px;border:1px solid var(--border-strong);background:var(--card);font-size:13px;text-align:center;box-sizing:border-box;}
+  .btn-primary{background:var(--text);color:#fff;border:none;}
+  .btn-row{display:flex;gap:8px;}
+  .btn-row .btn{flex:1;}
+  .name{font-weight:600;}
+  .muted{color:var(--text-muted);}
+  .section-title{font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:8px;}
+  .list-box{border:1px solid var(--border);border-radius:8px;padding:0 12px;margin-bottom:16px;}
+  .empty{font-size:12px;color:var(--text-muted);text-align:center;padding:16px 0;border:1px dashed var(--border);border-radius:8px;margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<div class="cap">1 &middot; Session home</div>
+<div class="phone">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div>
+      <div style="font-size:14px;font-weight:600;">Wed night open play</div>
+      <div style="font-size:12px;" class="muted">12 Aug &middot; 8 players</div>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);border:1px solid var(--border);border-radius:6px;padding:4px 8px;">Options</div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span class="section-title" style="margin-bottom:0;">Players</span>
+    <div class="btn" style="width:auto;padding:4px 10px;font-size:12px;">+ Add</div>
+  </div>
+  <div class="list-box">
+    <div class="row"><span class="name">Aji <span class="muted" style="font-weight:400;">&middot; Intermediate</span></span><span class="pill" style="background:var(--success-bg);color:var(--success);">Active</span></div>
+    <div class="row"><span class="name">Budi <span class="muted" style="font-weight:400;">&middot; Beginner</span></span><span class="pill" style="background:var(--success-bg);color:var(--success);">Active</span></div>
+    <div class="row"><span class="name">Citra <span class="muted" style="font-weight:400;">&middot; Advanced</span></span><span class="pill" style="background:var(--success-bg);color:var(--success);">Active</span></div>
+    <div class="row"><span class="muted">+5 more players</span><span></span></div>
+  </div>
+  <div class="section-title">Matches</div>
+  <div class="empty">No matches yet</div>
+  <div class="btn btn-primary">Create match</div>
+</div>
+
+<div class="arrow"><div class="tri"></div>tap &ldquo;Create match&rdquo;</div>
+
+<div class="cap">2 &middot; Create match (draft)</div>
+<div class="phone">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <span style="font-size:14px;font-weight:600;">New match</span>
+    <span class="muted">&#10005;</span>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:12px;">
+    <span class="pill" style="background:var(--bg);border:1px solid var(--border);color:var(--text-muted);">Balanced by skill</span>
+    <span class="pill" style="background:var(--bg);border:1px solid var(--border);color:var(--text-muted);">Fresh pairing</span>
+  </div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin-bottom:6px;">
+    <div class="muted" style="font-size:11px;margin-bottom:2px;">Side A</div>
+    <div class="row"><span>Aji</span><span class="muted" style="font-size:12px;">swap</span></div>
+    <div class="row"><span>Dewi</span><span class="muted" style="font-size:12px;">swap</span></div>
+  </div>
+  <div style="text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:6px;">vs</div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:6px 12px;margin-bottom:12px;">
+    <div class="muted" style="font-size:11px;margin-bottom:2px;">Side B</div>
+    <div class="row"><span>Budi</span><span class="muted" style="font-size:12px;">swap</span></div>
+    <div class="row"><span>Citra</span><span class="muted" style="font-size:12px;">swap</span></div>
+  </div>
+  <div style="background:var(--warn-bg);border:1px solid var(--warn);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--warn);margin-bottom:12px;">
+    Not enough players for same-gender only.
+    <div class="btn-row" style="margin-top:6px;">
+      <div class="btn" style="font-size:11px;padding:4px 8px;">Mixed ok</div>
+      <div class="btn" style="font-size:11px;padding:4px 8px;">Cancel</div>
+    </div>
+  </div>
+  <div class="btn-row">
+    <div class="btn">Regenerate</div>
+    <div class="btn btn-primary">Confirm match</div>
+  </div>
+</div>
+
+<div class="arrow"><div class="tri"></div>tap &ldquo;Confirm match&rdquo;</div>
+
+<div class="cap">3 &middot; Session home (match live)</div>
+<div class="phone">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <div>
+      <div style="font-size:14px;font-weight:600;">Wed night open play</div>
+      <div style="font-size:12px;" class="muted">12 Aug &middot; 8 players</div>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);border:1px solid var(--border);border-radius:6px;padding:4px 8px;">Options</div>
+  </div>
+  <div class="section-title">Players</div>
+  <div class="list-box">
+    <div class="row"><span class="name">Aji</span><span class="pill" style="background:var(--bg);color:var(--text-muted);">Playing</span></div>
+    <div class="row"><span class="name">Budi</span><span class="pill" style="background:var(--bg);color:var(--text-muted);">Playing</span></div>
+    <div class="row"><span class="name">Elin <span class="muted" style="font-weight:400;">&middot; Beginner</span></span><span class="pill" style="background:var(--success-bg);color:var(--success);">Active</span></div>
+    <div class="row"><span class="muted">+5 more players</span><span></span></div>
+  </div>
+  <div class="section-title">Matches</div>
+  <div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+    <div>
+      <div style="font-size:13px;font-weight:600;">Match 1</div>
+      <div class="muted" style="font-size:11px;">Aji, Dewi vs Budi, Citra</div>
+    </div>
+    <span class="pill" style="background:var(--warn-bg);color:var(--warn);">In progress</span>
+  </div>
+  <div class="btn btn-primary">Create match</div>
+</div>
+
+<div class="arrow"><div class="tri"></div>tap the match card</div>
+
+<div class="cap">4 &middot; Score entry</div>
+<div class="phone">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <span style="font-size:14px;font-weight:600;">Match 1 result</span>
+    <span class="muted">&#10005;</span>
+  </div>
+  <div style="text-align:center;font-size:13px;color:var(--text-muted);margin-bottom:14px;">Aji &amp; Dewi &nbsp;vs&nbsp; Budi &amp; Citra</div>
+  <div class="btn" style="text-align:left;background:var(--accent-bg);border:2px solid var(--accent);color:var(--accent);margin-bottom:8px;">Aji &amp; Dewi won</div>
+  <div class="btn" style="text-align:left;margin-bottom:14px;">Budi &amp; Citra won</div>
+  <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">+ Add score (optional)</div>
+  <div class="btn btn-primary">Save result</div>
+</div>
+
+<div class="arrow"><div class="tri"></div>tap the gear icon on screen 1</div>
+
+<div class="cap">5 &middot; Options panel</div>
+<div class="phone" style="padding:0;height:520px;display:flex;flex-direction:column;overflow:hidden;">
+  <div style="flex:1;position:relative;background:var(--bg);">
+    <div style="padding:14px;opacity:0.45;">
+      <div style="font-size:14px;font-weight:600;">Wed night open play</div>
+      <div style="font-size:12px;" class="muted">12 Aug &middot; 8 players</div>
+    </div>
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.25);"></div>
+  </div>
+  <div style="background:var(--card);border-radius:16px 16px 0 0;padding:12px 16px 16px;">
+    <div style="width:36px;height:4px;border-radius:2px;background:var(--border-strong);margin:0 auto 12px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span style="font-size:15px;font-weight:600;">Options</span>
+      <span class="muted">&#10005;</span>
+    </div>
+    <div class="section-title" style="margin-bottom:2px;">Match rules</div>
+    <div class="row" style="border-bottom:none;padding:8px 0;">
+      <span style="display:flex;align-items:center;gap:10px;">
+        <span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--accent);display:inline-flex;align-items:center;justify-content:center;"><span style="width:8px;height:8px;border-radius:50%;background:var(--accent);"></span></span>
+        <span><span style="font-weight:600;">Mixed doubles allowed</span><br><span class="muted" style="font-size:11px;">Any gender combination</span></span>
+      </span>
+    </div>
+    <div class="row" style="border-bottom:none;padding:8px 0;">
+      <span style="display:flex;align-items:center;gap:10px;">
+        <span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--border-strong);display:inline-block;"></span>
+        <span><span style="font-weight:600;">Same gender only</span><br><span class="muted" style="font-size:11px;">Doubles pairs must match gender</span></span>
+      </span>
+    </div>
+    <div class="row" style="border-bottom:none;padding:8px 0 12px;">
+      <span style="display:flex;align-items:center;gap:10px;">
+        <span style="width:16px;height:16px;border-radius:50%;border:2px solid var(--border-strong);display:inline-block;"></span>
+        <span><span style="font-weight:600;">Singles only</span><br><span class="muted" style="font-size:11px;">1 vs 1 matches</span></span>
+      </span>
+    </div>
+    <div class="section-title" style="margin-bottom:2px;">Matchmaking</div>
+    <div class="row" style="border-bottom:none;padding:8px 0;">
+      <span>
+        <span style="font-weight:600;">Skill-based matchmaking</span><br>
+        <span class="muted" style="font-size:11px;">Balances matches by skill. Turn off for casual play.</span>
+      </span>
+      <span style="width:34px;height:19px;border-radius:10px;background:var(--accent);position:relative;flex-shrink:0;display:inline-block;">
+        <span style="width:15px;height:15px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;"></span>
+      </span>
+    </div>
+    <div class="muted" style="font-size:11px;margin:8px 0 12px;">Rotation order (who plays next) always applies, regardless of these settings.</div>
+    <div class="btn btn-primary">Done</div>
+  </div>
+</div>
+
+</body>
+</html>
