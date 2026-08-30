@@ -1,16 +1,38 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #faf9f7;
-  --color-card: #ffffff;
-  --color-line: #e2e0db;
-  --color-line-strong: #c9c6bf;
-  --color-ink: #1c1b18;
-  --color-ink-muted: #8a877e;
-  --color-accent: #2f6f4f;
-  --color-accent-bg: #e7f1ec;
-  --color-warn: #8a5a12;
-  --color-warn-bg: #fbf0dd;
+  /* Court Line palette — design_spec_for_claude_code.md */
+  --color-bg: #f6f7f3;
+  --color-surface: #ffffff;
+  --color-ink: #17231c;
+  --color-muted: #6b7568;
+  --color-primary: #1e6b4a;
+  --color-primary-bg: #e1efe7;
+  --color-secondary: #29527e;
+  --color-secondary-bg: #e4ebf1;
+  --color-line: #dde3da;
+  --color-warn: #9c5c12;
+  --color-warn-bg: #fbeeda;
+  --color-band-text: #f5f8f5;
+  --color-band-sub: rgba(245, 248, 245, 0.72);
+
+  --font-display: var(--font-space-grotesk), sans-serif;
+  --font-sans: var(--font-inter), sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), monospace;
+
+  --animate-pulse-glow: pulse-glow 1.8s infinite;
+
+  @keyframes pulse-glow {
+    0% {
+      filter: drop-shadow(0 0 0 rgba(30, 107, 74, 0.5));
+    }
+    70% {
+      filter: drop-shadow(0 0 5px rgba(30, 107, 74, 0));
+    }
+    100% {
+      filter: drop-shadow(0 0 0 rgba(30, 107, 74, 0));
+    }
+  }
 }
 
 body {

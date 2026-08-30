@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screen 2 v2 — Create match</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7F3; --surface:#FFFFFF; --ink:#17231C; --muted:#6B7568;
+    --primary:#1E6B4A; --primary-bg:#E1EFE7; --secondary:#29527E; --secondary-bg:#E4EBF1;
+    --line:#DDE3DA; --warn:#9C5C12; --warn-bg:#FBEEDA;
+    --band-text:#F5F8F5; --band-sub:rgba(245,248,245,.72);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#EDEEE9;color:var(--ink);font-family:'Inter',sans-serif;padding:28px 14px 60px;}
+  .cap{text-align:center;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:#8a877e;margin-bottom:10px;}
+  .phone{width:300px;margin:0 auto 36px;border:1px solid #c9c6bf;border-radius:24px;background:var(--bg);overflow:hidden;}
+
+  .band{background:var(--primary);padding:14px 16px 16px;position:relative;}
+  .band::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.16);}
+  .band-row{display:flex;justify-content:space-between;align-items:center;}
+  .band h2{font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--band-text);margin:0;}
+  .band-close{color:var(--band-sub);font-size:14px;}
+
+  .body-area{position:relative;padding:16px;overflow:hidden;}
+  .court-texture{position:absolute;inset:12px;border:1.5px solid rgba(23,35,28,.055);pointer-events:none;}
+  .court-texture::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1.5px;background:rgba(23,35,28,.055);}
+
+  .tags{position:relative;z-index:1;display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+  .tag{font-family:'IBM Plex Mono';font-size:10px;background:var(--secondary-bg);color:var(--secondary);padding:4px 9px;border-radius:20px;}
+
+  .side-box{position:relative;z-index:1;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 14px;margin-bottom:8px;}
+  .side-label{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:6px;margin-bottom:2px;}
+  .prow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13.5px;font-weight:600;border-bottom:1px solid var(--line);}
+  .prow:last-child{border-bottom:none;}
+  .swap{display:flex;align-items:center;gap:4px;font-family:'Inter';font-weight:400;font-size:11.5px;color:var(--muted);}
+
+  .net-divider{position:relative;z-index:1;display:flex;align-items:center;gap:8px;margin:10px 0;}
+  .net-divider .mesh{flex:1;height:6px;background-image:repeating-linear-gradient(90deg,var(--line) 0 2px,transparent 2px 7px);}
+  .net-divider .vs{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--secondary);font-weight:600;}
+
+  .warn-banner{position:relative;z-index:1;background:var(--warn-bg);border-radius:8px;padding:11px 12px;margin:12px 0;}
+  .warn-banner .msg{font-size:12px;color:var(--warn);line-height:1.45;margin-bottom:9px;}
+  .warn-actions{display:flex;gap:8px;}
+  .warn-btn{font-family:'IBM Plex Mono';font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:7px;text-align:center;flex:1;}
+  .warn-btn.solid{background:var(--warn);color:#fff;}
+  .warn-btn.ghost{border:1.5px solid var(--warn);color:var(--warn);}
+
+  .btn-row{position:relative;z-index:1;display:flex;gap:8px;margin-top:14px;}
+  .btn{flex:1;text-align:center;padding:12px;font-family:'IBM Plex Mono';font-weight:600;font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;border-radius:8px;}
+  .btn-outline{border:1.5px solid var(--secondary);color:var(--secondary);}
+  .btn-solid{background:var(--primary);color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="cap">Screen 2 · Create match (draft) — normal</div>
+<div class="phone">
+  <div class="band"><div class="band-row"><h2>New match</h2><span class="band-close">✕</span></div></div>
+  <div class="body-area">
+    <div class="court-texture"></div>
+    <div class="tags"><span class="tag">Balanced by skill</span><span class="tag">Fresh pairing</span></div>
+
+    <div class="side-box">
+      <div class="side-label">Side A</div>
+      <div class="prow"><span>Aji</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+      <div class="prow"><span>Dewi</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+    </div>
+    <div class="net-divider"><span class="mesh"></span><span class="vs">VS</span><span class="mesh"></span></div>
+    <div class="side-box">
+      <div class="side-label">Side B</div>
+      <div class="prow"><span>Budi</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+      <div class="prow"><span>Citra</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+    </div>
+
+    <div class="btn-row">
+      <div class="btn btn-outline">Reshuffle</div>
+      <div class="btn btn-solid">Start match</div>
+    </div>
+  </div>
+</div>
+
+<div class="cap">Screen 2 · Create match (draft) — gender rule conflict</div>
+<div class="phone">
+  <div class="band"><div class="band-row"><h2>New match</h2><span class="band-close">✕</span></div></div>
+  <div class="body-area">
+    <div class="court-texture"></div>
+    <div class="tags"><span class="tag">Balanced by skill</span><span class="tag">Fresh pairing</span></div>
+
+    <div class="side-box">
+      <div class="side-label">Side A</div>
+      <div class="prow"><span>Aji</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+      <div class="prow"><span>Dewi</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+    </div>
+    <div class="net-divider"><span class="mesh"></span><span class="vs">VS</span><span class="mesh"></span></div>
+    <div class="side-box">
+      <div class="side-label">Side B</div>
+      <div class="prow"><span>Budi</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+      <div class="prow"><span>Citra</span><span class="swap"><svg width="10" height="10" viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="9" rx="6" ry="7" stroke="currentColor" stroke-width="1.8"/><line x1="12" y1="16" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>swap</span></div>
+    </div>
+
+    <div class="warn-banner">
+      <div class="msg">Not enough players to keep sides same-gender.</div>
+      <div class="warn-actions">
+        <div class="warn-btn ghost">Cancel</div>
+        <div class="warn-btn solid">Go mixed</div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div class="btn btn-outline">Reshuffle</div>
+      <div class="btn btn-solid">Start match</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

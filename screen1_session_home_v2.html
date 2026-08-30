@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screen 1 v2 — Session home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7F3; --surface:#FFFFFF; --ink:#17231C; --muted:#6B7568;
+    --primary:#1E6B4A; --primary-bg:#E1EFE7; --secondary:#29527E;
+    --line:#DDE3DA; --band-text:#F5F8F5; --band-sub:rgba(245,248,245,.72);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#EDEEE9;color:var(--ink);font-family:'Inter',sans-serif;padding:28px 14px 60px;}
+  .cap{text-align:center;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:#8a877e;margin-bottom:10px;}
+  .phone{width:300px;margin:0 auto 36px;border:1px solid #c9c6bf;border-radius:24px;background:var(--bg);overflow:hidden;}
+
+  .band{background:var(--primary);padding:16px 16px 18px;position:relative;}
+  .band::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.16);}
+  .band-row{display:flex;justify-content:space-between;align-items:flex-start;}
+  .band h2{font-family:'Space Grotesk';font-weight:700;font-size:18px;color:var(--band-text);margin:0;line-height:1.1;}
+  .band .sub{font-size:11px;color:var(--band-sub);margin-top:3px;}
+  .band-btn{font-family:'IBM Plex Mono';font-size:10px;color:var(--band-text);background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:7px;padding:5px 9px;white-space:nowrap;}
+
+  .body-area{position:relative;padding:16px;overflow:hidden;}
+  .court-texture{position:absolute;inset:12px;border:1.5px solid rgba(23,35,28,.055);pointer-events:none;}
+  .court-texture::after{content:'';position:absolute;left:50%;top:0;bottom:0;width:1.5px;background:rgba(23,35,28,.055);}
+
+  .section-row{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .section-label{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .add-btn{font-family:'IBM Plex Mono';font-size:10.5px;color:var(--primary);background:var(--primary-bg);border-radius:7px;padding:5px 9px;}
+
+  .list-box{position:relative;z-index:1;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:0 12px;margin-bottom:16px;}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;font-size:13px;border-bottom:1px solid var(--line);}
+  .row:last-child{border-bottom:none;}
+  .name{font-weight:600;}
+  .tier{color:var(--muted);font-weight:400;}
+  .pill{font-family:'IBM Plex Mono';font-size:10px;padding:3px 8px;border-radius:6px;background:var(--primary-bg);color:var(--primary);}
+  .muted-row{color:var(--muted);font-size:12.5px;}
+
+  .summary-bar{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px;}
+  .summary-bar .chev{color:var(--muted);font-family:'IBM Plex Mono';font-size:12px;}
+
+  .empty{position:relative;z-index:1;font-size:12px;color:var(--muted);text-align:center;padding:20px 0;border:1px dashed var(--line);border-radius:8px;margin-bottom:16px;}
+
+  .btn-primary{position:relative;z-index:1;width:100%;text-align:center;padding:13px;font-family:'IBM Plex Mono';font-weight:600;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--primary);border-radius:8px;}
+
+  @keyframes pulseGlow{0%{filter:drop-shadow(0 0 0 rgba(30,107,74,.5));}70%{filter:drop-shadow(0 0 5px rgba(30,107,74,0));}100%{filter:drop-shadow(0 0 0 rgba(30,107,74,0));}}
+  .shuttle{color:var(--primary);animation:pulseGlow 1.8s infinite;flex-shrink:0;}
+
+  .live-card{position:relative;z-index:1;background:var(--surface);border-radius:4px;border-left:4px solid var(--primary);padding:14px;margin-bottom:16px;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+  .live-row{display:flex;align-items:center;gap:7px;margin-bottom:10px;}
+  .live-label{font-family:'IBM Plex Mono';font-size:10.5px;font-weight:600;color:var(--primary);letter-spacing:.06em;text-transform:uppercase;}
+  .live-names{font-size:13.5px;font-weight:600;color:var(--ink);margin-bottom:12px;}
+  .enter-result{display:inline-block;font-family:'IBM Plex Mono';font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--secondary);border:1.5px solid var(--secondary);border-radius:7px;padding:6px 12px;}
+</style>
+</head>
+<body>
+
+<div class="cap">Screen 1 · Session home — before first match</div>
+<div class="phone">
+  <div class="band">
+    <div class="band-row">
+      <div><h2>Wed night open play</h2><div class="sub">12 Aug · 8 players</div></div>
+      <div class="band-btn">House rules</div>
+    </div>
+  </div>
+  <div class="body-area">
+    <div class="court-texture"></div>
+    <div class="section-row"><span class="section-label">Players</span><span class="add-btn">+ Add</span></div>
+    <div class="list-box">
+      <div class="row"><span class="name">Aji <span class="tier">· Intermediate</span></span><span class="pill">Active</span></div>
+      <div class="row"><span class="name">Budi <span class="tier">· Beginner</span></span><span class="pill">Active</span></div>
+      <div class="row"><span class="name">Citra <span class="tier">· Advanced</span></span><span class="pill">Active</span></div>
+      <div class="row muted-row">+5 more players</div>
+    </div>
+    <div class="section-row"><span class="section-label">Matches</span></div>
+    <div class="empty">No one's on court yet</div>
+    <div class="btn-primary">Create match</div>
+  </div>
+</div>
+
+<div class="cap">Screen 1 · Session home — match live</div>
+<div class="phone">
+  <div class="band">
+    <div class="band-row">
+      <div><h2>Wed night open play</h2><div class="sub">12 Aug · 8 players</div></div>
+      <div class="band-btn">House rules</div>
+    </div>
+  </div>
+  <div class="body-area">
+    <div class="court-texture"></div>
+    <div class="section-row"><span class="section-label">Players</span></div>
+    <div class="summary-bar"><span>6 active · 2 playing</span><span class="chev">›</span></div>
+    <div class="section-row"><span class="section-label">Matches</span></div>
+    <div class="live-card">
+      <div class="live-row">
+        <svg class="shuttle" width="15" height="15" viewBox="0 0 24 24" fill="none">
+          <path d="M12 14 L6 4 M12 14 L9 2.5 M12 14 L12 1.5 M12 14 L15 2.5 M12 14 L18 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+          <circle cx="12" cy="16.2" r="2.6" fill="currentColor"/>
+        </svg>
+        <span class="live-label">On court</span>
+      </div>
+      <div class="live-names">Aji & Dewi vs Budi & Citra</div>
+      <div class="enter-result">Who won?</div>
+    </div>
+    <div class="btn-primary">Create match</div>
+  </div>
+</div>
+
+</body>
+</html>

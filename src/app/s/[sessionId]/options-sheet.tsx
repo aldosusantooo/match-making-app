@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { updateSettings } from "@/app/actions";
+import { Button } from "@/components/button";
+import { BandClose, HeaderBand } from "@/components/header-band";
 import type { SessionDTO } from "@/lib/dto";
 import type { GenderRule } from "@/lib/engine/types";
 
@@ -51,78 +53,81 @@ export function OptionsSheet({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/25">
-      <div className="w-full max-w-sm rounded-t-2xl bg-card px-4 pt-3 pb-6 shadow-lg">
-        <div className="mx-auto mb-3 h-1 w-9 rounded-full bg-line-strong" />
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-[15px] font-semibold">Options</h2>
-          <button onClick={onClose} aria-label="Close" className="px-1 text-ink-muted">
-            ✕
-          </button>
-        </div>
+      <div className="w-full max-w-sm overflow-hidden rounded-t-[18px] bg-surface shadow-lg">
+        <HeaderBand
+          title="House rules"
+          dragHandle
+          action={<BandClose onClose={onClose} />}
+          className="pt-3 pb-3.5"
+        />
 
-        <p className="mb-1 text-sm font-semibold text-ink-muted">Match rules</p>
-        {RULES.map((rule) => (
-          <button
-            key={rule.value}
-            onClick={() => setGenderRule(rule.value)}
-            className="flex w-full items-center gap-2.5 py-2 text-left"
-          >
-            <span
-              className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
-                genderRule === rule.value ? "border-accent" : "border-line-strong"
+        <div className="px-4.5 pt-3.5 pb-4.5">
+          <p className="mb-0.5 font-mono text-[10.5px] font-medium tracking-[0.06em] text-muted uppercase">
+            Match rules
+          </p>
+          {RULES.map((rule) => (
+            <button
+              key={rule.value}
+              onClick={() => setGenderRule(rule.value)}
+              className="flex w-full items-start gap-[11px] py-2 text-left"
+            >
+              <span
+                className={`mt-0.5 inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border-2 ${
+                  genderRule === rule.value ? "border-primary" : "border-line"
+                }`}
+              >
+                {genderRule === rule.value && (
+                  <span className="h-[9px] w-[9px] rounded-full bg-primary" />
+                )}
+              </span>
+              <span>
+                <span className="block text-[13.5px] font-semibold text-ink">
+                  {rule.label}
+                </span>
+                <span className="mt-0.5 block text-[11px] text-muted">
+                  {rule.hint}
+                </span>
+              </span>
+            </button>
+          ))}
+
+          <p className="mt-2 mb-0.5 font-mono text-[10.5px] font-medium tracking-[0.06em] text-muted uppercase">
+            Matchmaking
+          </p>
+          <div className="flex items-start justify-between gap-3 py-2">
+            <span>
+              <span className="block text-[13.5px] font-semibold text-ink">
+                Skill-based matchmaking
+              </span>
+              <span className="mt-0.5 block text-[11px] text-muted">
+                Balances matches by skill. Turn off for casual play.
+              </span>
+            </span>
+            <button
+              role="switch"
+              aria-checked={skillEnabled}
+              onClick={() => setSkillEnabled((v) => !v)}
+              className={`relative mt-0.5 h-[19px] w-[34px] shrink-0 rounded-[10px] transition-colors ${
+                skillEnabled ? "bg-primary" : "bg-line"
               }`}
             >
-              {genderRule === rule.value && (
-                <span className="h-2 w-2 rounded-full bg-accent" />
-              )}
-            </span>
-            <span>
-              <span className="block text-sm font-semibold">{rule.label}</span>
-              <span className="block text-[11px] text-ink-muted">{rule.hint}</span>
-            </span>
-          </button>
-        ))}
+              <span
+                className={`absolute top-0.5 h-[15px] w-[15px] rounded-full bg-white transition-all ${
+                  skillEnabled ? "right-0.5" : "left-0.5"
+                }`}
+              />
+            </button>
+          </div>
 
-        <p className="mt-3 mb-1 text-sm font-semibold text-ink-muted">
-          Matchmaking
-        </p>
-        <div className="flex items-center justify-between py-2">
-          <span className="pr-3">
-            <span className="block text-sm font-semibold">
-              Skill-based matchmaking
-            </span>
-            <span className="block text-[11px] text-ink-muted">
-              Balances matches by skill. Turn off for casual play.
-            </span>
-          </span>
-          <button
-            role="switch"
-            aria-checked={skillEnabled}
-            onClick={() => setSkillEnabled((v) => !v)}
-            className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
-              skillEnabled ? "bg-accent" : "bg-line-strong"
-            }`}
-          >
-            <span
-              className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${
-                skillEnabled ? "right-0.5" : "left-0.5"
-              }`}
-            />
-          </button>
+          <p className="mt-1.5 mb-3.5 text-[10.5px] leading-normal text-muted">
+            Fair rotation always comes first — this just decides how sides get
+            split.
+          </p>
+
+          <Button onClick={onDone} disabled={busy} className="w-full">
+            Done
+          </Button>
         </div>
-
-        <p className="mt-2 mb-3 text-[11px] text-ink-muted">
-          Rotation order (who plays next) always applies, regardless of these
-          settings.
-        </p>
-
-        <button
-          onClick={onDone}
-          disabled={busy}
-          className="w-full rounded-lg bg-ink px-4 py-3 text-sm font-medium text-white disabled:opacity-50"
-        >
-          Done
-        </button>
       </div>
     </div>
   );

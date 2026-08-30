@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { submitResult } from "@/app/actions";
+import { Button } from "@/components/button";
 import type { MatchDTO } from "@/lib/dto";
 import type { Side } from "@/lib/engine/types";
-import { Overlay } from "./draft-modal";
+import { Overlay } from "./overlay";
 
 export function ScoreModal({
   match,
@@ -15,7 +16,8 @@ export function ScoreModal({
 }) {
   const [winner, setWinner] = useState<Side | null>(null);
   const [showScore, setShowScore] = useState(false);
-  const [score, setScore] = useState("");
+  const [scoreA, setScoreA] = useState("");
+  const [scoreB, setScoreB] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,7 +31,11 @@ export function ScoreModal({
     setBusy(true);
     setError(null);
     try {
-      const result = await submitResult(match.id, winner, score || undefined);
+      const score =
+        scoreA.trim() && scoreB.trim()
+          ? `${scoreA.trim()}-${scoreB.trim()}`
+          : undefined;
+      const result = await submitResult(match.id, winner, score);
       if (result.ok) {
         onClose();
       } else {
@@ -40,37 +46,64 @@ export function ScoreModal({
     }
   }
 
-  const choiceClass = (selected: boolean) =>
-    selected
-      ? "w-full rounded-lg border-2 border-accent bg-accent-bg px-3 py-2.5 text-left text-sm text-accent"
-      : "w-full rounded-lg border border-line-strong bg-card px-3 py-2.5 text-left text-sm";
-
   return (
-    <Overlay title={`Match ${match.matchNumber} result`} onClose={onClose}>
-      <p className="mb-4 text-center text-sm text-ink-muted">
+    <Overlay
+      title={`Match ${String(match.matchNumber).padStart(2, "0")} result`}
+      onClose={onClose}
+    >
+      <p className="mb-4 text-center text-[12.5px] text-muted">
         {nameA} vs {nameB}
       </p>
+
       <div className="flex flex-col gap-2">
-        <button className={choiceClass(winner === "A")} onClick={() => setWinner("A")}>
-          {nameA} won
-        </button>
-        <button className={choiceClass(winner === "B")} onClick={() => setWinner("B")}>
-          {nameB} won
-        </button>
+        <WinRow
+          label={`${nameA} won`}
+          selected={winner === "A"}
+          onSelect={() => setWinner("A")}
+        />
+        <WinRow
+          label={`${nameB} won`}
+          selected={winner === "B"}
+          onSelect={() => setWinner("B")}
+        />
       </div>
 
       {showScore ? (
-        <input
-          value={score}
-          onChange={(e) => setScore(e.target.value)}
-          placeholder="e.g. 21-15"
-          className="mt-3 w-full rounded-lg border border-line-strong bg-card px-3 py-2 text-sm outline-none focus:border-accent"
-          autoFocus
-        />
+        <div className="mt-4 mb-1">
+          <div className="mb-0.5 flex justify-center">
+            <span className="w-[70px] text-center font-mono text-[9px] tracking-[0.04em] text-muted uppercase">
+              {nameA}
+            </span>
+            <span className="w-8" />
+            <span className="w-[70px] text-center font-mono text-[9px] tracking-[0.04em] text-muted uppercase">
+              {nameB}
+            </span>
+          </div>
+          <div className="flex items-center justify-center gap-3">
+            <input
+              value={scoreA}
+              onChange={(e) => setScoreA(e.target.value.replace(/\D/g, ""))}
+              inputMode="numeric"
+              maxLength={2}
+              placeholder="21"
+              autoFocus
+              className="w-[58px] rounded-lg border-[1.5px] border-line bg-surface py-2 text-center font-mono text-[26px] font-bold text-ink outline-none placeholder:text-line focus:border-primary"
+            />
+            <span className="font-mono text-xl text-muted">–</span>
+            <input
+              value={scoreB}
+              onChange={(e) => setScoreB(e.target.value.replace(/\D/g, ""))}
+              inputMode="numeric"
+              maxLength={2}
+              placeholder="18"
+              className="w-[58px] rounded-lg border-[1.5px] border-line bg-surface py-2 text-center font-mono text-[26px] font-bold text-ink outline-none placeholder:text-line focus:border-primary"
+            />
+          </div>
+        </div>
       ) : (
         <button
           onClick={() => setShowScore(true)}
-          className="mt-3 text-xs text-ink-muted"
+          className="mt-2.5 px-0.5 font-mono text-[11px] text-muted"
         >
           + Add score (optional)
         </button>
@@ -78,13 +111,40 @@ export function ScoreModal({
 
       {error && <p className="mt-3 text-xs text-warn">{error}</p>}
 
-      <button
+      <Button
         onClick={onSave}
         disabled={!winner || busy}
-        className="mt-4 w-full rounded-lg bg-ink px-4 py-3 text-sm font-medium text-white disabled:opacity-40"
+        className="mt-4 w-full"
       >
         Save result
-      </button>
+      </Button>
     </Overlay>
+  );
+}
+
+function WinRow({
+  label,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      onClick={onSelect}
+      className={[
+        "flex w-full items-center gap-2.5 rounded-lg border-[1.5px] px-3.5 py-3 text-left text-[13.5px] font-semibold",
+        selected
+          ? "border-primary bg-primary-bg text-primary"
+          : "border-line bg-surface text-ink",
+      ].join(" ")}
+    >
+      <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 border-current">
+        {selected && <span className="h-2 w-2 rounded-full bg-current" />}
+      </span>
+      {label}
+    </button>
   );
 }

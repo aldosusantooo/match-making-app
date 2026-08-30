@@ -2,11 +2,15 @@
 
 import { useMemo, useState } from "react";
 import { confirmMatch, generateDraft } from "@/app/actions";
+import { Button } from "@/components/button";
+import { Card } from "@/components/card";
+import { RacketIcon } from "@/components/icons";
 import type {
   GenerateDraftResponse,
   PlayerDTO,
   SessionDTO,
 } from "@/lib/dto";
+import { Overlay } from "./overlay";
 
 export function DraftModal({
   session,
@@ -85,30 +89,25 @@ export function DraftModal({
     }
   }
 
-  const swapIn = (
-    side: "A" | "B",
-    index: number,
-    replacement: PlayerDTO,
-  ) => {
+  const swapIn = (side: "A" | "B", index: number, replacement: PlayerDTO) => {
     const setter = side === "A" ? setSideA : setSideB;
     setter((prev) => prev.map((p, i) => (i === index ? replacement : p)));
   };
 
   const hasDraft = sideA.length > 0;
 
+  const tagClass =
+    "rounded-full bg-secondary-bg px-2.5 py-1 font-mono text-[10px] text-secondary";
+
   return (
     <Overlay onClose={onClose} title="New match">
-      <div className="mb-3 flex gap-1.5">
+      <div className="mb-3.5 flex flex-wrap gap-1.5">
         {session.skillMatchmakingEnabled && (
-          <span className="rounded-md border border-line bg-bg px-2 py-0.5 text-[11px] text-ink-muted">
-            Balanced by skill
-          </span>
+          <span className={tagClass}>Balanced by skill</span>
         )}
-        <span className="rounded-md border border-line bg-bg px-2 py-0.5 text-[11px] text-ink-muted">
-          Fresh pairing
-        </span>
+        <span className={tagClass}>Fresh pairing</span>
         {allowMixed && session.genderRule === "same_gender_only" && (
-          <span className="rounded-md bg-warn-bg px-2 py-0.5 text-[11px] text-warn">
+          <span className="rounded-full bg-warn-bg px-2.5 py-1 font-mono text-[10px] text-warn">
             Mixed allowed
           </span>
         )}
@@ -122,7 +121,7 @@ export function DraftModal({
             bench={bench}
             onSwap={(i, p) => swapIn("A", i, p)}
           />
-          <p className="my-1.5 text-center text-xs text-ink-muted">vs</p>
+          <NetDivider />
           <SideBox
             label="Side B"
             players={sideB}
@@ -133,21 +132,23 @@ export function DraftModal({
       )}
 
       {conflict && (
-        <div className="mt-3 rounded-lg border border-warn bg-warn-bg px-3 py-2.5 text-xs text-warn">
-          Not enough players for same-gender only.
-          <div className="mt-2 flex gap-2">
+        <div className="mt-3 rounded-lg bg-warn-bg px-3 py-2.5">
+          <p className="mb-2 text-xs leading-relaxed text-warn">
+            Not enough players to keep sides same-gender.
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={onClose}
+              className="flex-1 rounded-[7px] border-[1.5px] border-warn px-2.5 py-1.5 text-center font-mono text-[10px] font-semibold tracking-[0.04em] text-warn uppercase"
+            >
+              Cancel
+            </button>
             <button
               onClick={() => regenerate(true)}
               disabled={busy}
-              className="flex-1 rounded-lg border border-warn px-2 py-1.5 disabled:opacity-50"
+              className="flex-1 rounded-[7px] bg-warn px-2.5 py-1.5 text-center font-mono text-[10px] font-semibold tracking-[0.04em] text-white uppercase disabled:opacity-50"
             >
-              Mixed ok
-            </button>
-            <button
-              onClick={onClose}
-              className="flex-1 rounded-lg border border-warn px-2 py-1.5"
-            >
-              Cancel
+              Go mixed
             </button>
           </div>
         </div>
@@ -156,24 +157,45 @@ export function DraftModal({
       {error && <p className="mt-3 text-xs text-warn">{error}</p>}
 
       {hasDraft && (
-        <div className="mt-4 flex gap-2">
-          <button
+        <div className="mt-3.5 flex gap-2">
+          <Button
+            variant="outline"
             onClick={() => regenerate()}
             disabled={busy}
-            className="flex-1 rounded-lg border border-line-strong px-3 py-2.5 text-sm disabled:opacity-50"
+            className="flex-1"
           >
-            Regenerate
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={busy}
-            className="flex-1 rounded-lg bg-ink px-3 py-2.5 text-sm font-medium text-white disabled:opacity-50"
-          >
-            Confirm match
-          </button>
+            Reshuffle
+          </Button>
+          <Button onClick={onConfirm} disabled={busy} className="flex-1">
+            Start match
+          </Button>
         </div>
       )}
     </Overlay>
+  );
+}
+
+function NetDivider() {
+  return (
+    <div className="my-2.5 flex items-center gap-2">
+      <span
+        className="h-1.5 flex-1"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--color-line) 0 2px, transparent 2px 7px)",
+        }}
+      />
+      <span className="font-mono text-[10.5px] font-semibold text-secondary">
+        VS
+      </span>
+      <span
+        className="h-1.5 flex-1"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(90deg, var(--color-line) 0 2px, transparent 2px 7px)",
+        }}
+      />
+    </div>
   );
 }
 
@@ -189,65 +211,47 @@ function SideBox({
   onSwap: (index: number, replacement: PlayerDTO) => void;
 }) {
   return (
-    <div className="rounded-lg border border-line px-3 py-2">
-      <p className="mb-1 text-[11px] text-ink-muted">{label}</p>
+    <Card className="px-3.5 py-1.5">
+      <p className="pt-1.5 pb-0.5 font-mono text-[10px] tracking-[0.06em] text-muted uppercase">
+        {label}
+      </p>
       {players.map((player, i) => (
         <div
           key={player.id}
-          className="flex items-center justify-between border-b border-line py-1.5 last:border-b-0"
+          className="flex items-center justify-between border-b border-line py-2 last:border-b-0"
         >
-          <span className="text-sm">{player.name}</span>
+          <span className="text-[13.5px] font-semibold">{player.name}</span>
           {bench.length > 0 ? (
-            <select
-              value=""
-              onChange={(e) => {
-                const replacement = bench.find((p) => p.id === e.target.value);
-                if (replacement) {
-                  onSwap(i, replacement);
-                }
-              }}
-              className="rounded-md border border-line bg-card px-1.5 py-0.5 text-xs text-ink-muted"
-            >
-              <option value="">swap</option>
-              {bench.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
+            <span className="flex items-center gap-1 text-muted">
+              <RacketIcon />
+              <select
+                value=""
+                onChange={(e) => {
+                  const replacement = bench.find(
+                    (p) => p.id === e.target.value,
+                  );
+                  if (replacement) {
+                    onSwap(i, replacement);
+                  }
+                }}
+                className="appearance-none bg-transparent text-[11.5px] text-muted outline-none"
+              >
+                <option value="">swap</option>
+                {bench.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </span>
           ) : (
-            <span className="text-xs text-ink-muted/50">swap</span>
+            <span className="flex items-center gap-1 text-[11.5px] text-muted/50">
+              <RacketIcon />
+              swap
+            </span>
           )}
         </div>
       ))}
-    </div>
-  );
-}
-
-export function Overlay({
-  title,
-  onClose,
-  children,
-}: {
-  title: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/25 sm:items-center">
-      <div className="w-full max-w-sm rounded-t-2xl bg-card p-4 pb-6 shadow-lg sm:rounded-2xl">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-sm font-semibold">{title}</h2>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="px-1 text-ink-muted"
-          >
-            ✕
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
+    </Card>
   );
 }

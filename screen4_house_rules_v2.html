@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Screen 4 v2 — House rules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=IBM+Plex+Mono:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F7F3; --surface:#FFFFFF; --ink:#17231C; --muted:#6B7568;
+    --primary:#1E6B4A; --primary-bg:#E1EFE7; --secondary:#29527E;
+    --line:#DDE3DA; --band-text:#F5F8F5; --band-sub:rgba(245,248,245,.72);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:#EDEEE9;color:var(--ink);font-family:'Inter',sans-serif;padding:28px 14px 60px;}
+  .cap{text-align:center;font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:#8a877e;margin-bottom:10px;}
+  .phone{width:300px;height:540px;margin:0 auto;border:1px solid #c9c6bf;border-radius:24px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;}
+
+  .backdrop{flex:1;position:relative;background:var(--bg);}
+  .backdrop .mini-band{background:var(--primary);padding:14px 16px;opacity:.55;}
+  .backdrop .mini-band h3{font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--band-text);margin:0;}
+  .backdrop .mini-band .sub{font-size:10.5px;color:var(--band-sub);margin-top:2px;}
+  .backdrop::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.2);}
+
+  .sheet{background:var(--surface);border-radius:18px 18px 0 0;overflow:hidden;}
+  .sheet-band{background:var(--primary);padding:12px 18px 14px;position:relative;}
+  .drag{width:32px;height:3.5px;border-radius:2px;background:rgba(255,255,255,.3);margin:0 auto 10px;}
+  .sheet-band-row{display:flex;justify-content:space-between;align-items:center;}
+  .sheet-band h2{font-family:'Space Grotesk';font-weight:700;font-size:16px;color:var(--band-text);margin:0;}
+  .band-close{color:var(--band-sub);font-size:14px;}
+
+  .sheet-body{padding:14px 18px 18px;}
+  .section-label{font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px;}
+
+  .opt-row{display:flex;align-items:flex-start;gap:11px;padding:9px 0;}
+  .radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;margin-top:2px;display:inline-flex;align-items:center;justify-content:center;}
+  .radio.selected{border-color:var(--primary);}
+  .radio.selected::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--primary);}
+  .opt-title{font-weight:600;font-size:13.5px;color:var(--ink);}
+  .opt-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+  .toggle-row{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;gap:12px;}
+  .toggle{width:34px;height:19px;border-radius:10px;background:var(--primary);position:relative;flex-shrink:0;margin-top:2px;}
+  .toggle .knob{width:15px;height:15px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;}
+
+  .footnote{font-size:10.5px;color:var(--muted);line-height:1.5;margin:6px 0 14px;}
+
+  .btn-primary{width:100%;text-align:center;padding:13px;font-family:'IBM Plex Mono';font-weight:600;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--primary);border-radius:8px;}
+</style>
+</head>
+<body>
+
+<div class="cap">Screen 4 · House rules panel</div>
+<div class="phone">
+  <div class="backdrop">
+    <div class="mini-band"><h3>Wed night open play</h3><div class="sub">12 Aug · 8 players</div></div>
+  </div>
+
+  <div class="sheet">
+    <div class="sheet-band">
+      <div class="drag"></div>
+      <div class="sheet-band-row"><h2>House rules</h2><span class="band-close">✕</span></div>
+    </div>
+    <div class="sheet-body">
+      <div class="section-label">Match rules</div>
+      <div class="opt-row">
+        <span class="radio selected"></span>
+        <div><div class="opt-title">Mixed doubles allowed</div><div class="opt-sub">Any gender combination</div></div>
+      </div>
+      <div class="opt-row">
+        <span class="radio"></span>
+        <div><div class="opt-title">Same gender only</div><div class="opt-sub">Doubles pairs must match gender</div></div>
+      </div>
+      <div class="opt-row">
+        <span class="radio"></span>
+        <div><div class="opt-title">Singles only</div><div class="opt-sub">1 vs 1 matches</div></div>
+      </div>
+
+      <div class="section-label" style="margin-top:8px;">Matchmaking</div>
+      <div class="toggle-row">
+        <div><div class="opt-title">Skill-based matchmaking</div><div class="opt-sub">Balances matches by skill. Turn off for casual play.</div></div>
+        <span class="toggle"><span class="knob"></span></span>
+      </div>
+
+      <div class="footnote">Fair rotation always comes first — this just decides how sides get split.</div>
+
+      <div class="btn-primary">Done</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
