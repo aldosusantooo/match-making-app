@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { formatSessionDate } from "@/lib/format";
 import { toSessionDTO } from "@/lib/mappers";
 import { SessionView } from "./session-view";
 
@@ -21,5 +22,9 @@ export default async function SessionPage({
   if (!session) {
     notFound();
   }
-  return <SessionView session={toSessionDTO(session)} />;
+  const dto = toSessionDTO(session);
+  // Formatted here rather than in the client component: the same call would
+  // run in the server's timezone during SSR and the browser's after
+  // hydration, which disagree either side of midnight.
+  return <SessionView session={dto} dateLabel={formatSessionDate(dto.createdAt)} />;
 }

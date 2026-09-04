@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 import { generateDraft } from "@/app/actions";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { BandButton, HeaderBand } from "@/components/header-band";
+import { AppHeader } from "@/components/app-header";
+import { SectionHeader } from "@/components/section-header";
+import { SessionTitle } from "@/components/session-title";
 import { StatusBadge } from "@/components/status-badge";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
 import { DraftModal } from "./draft-modal";
@@ -18,7 +20,13 @@ type Modal =
   | { type: "options" }
   | null;
 
-export function SessionView({ session }: { session: SessionDTO }) {
+export function SessionView({
+  session,
+  dateLabel,
+}: {
+  session: SessionDTO;
+  dateLabel: string;
+}) {
   const [modal, setModal] = useState<Modal>(null);
   const [createError, setCreateError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
@@ -52,23 +60,25 @@ export function SessionView({ session }: { session: SessionDTO }) {
     }
   }
 
-  const dateLabel = new Date(session.createdAt).toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-  });
+  const matchesPlayed = session.matches.filter(
+    (m) => m.status === "completed",
+  ).length;
 
   return (
-    <main className="mx-auto w-full max-w-sm pb-28">
-      <HeaderBand
-        title={session.name}
-        subtitle={`${dateLabel} · ${session.players.length} player${
-          session.players.length === 1 ? "" : "s"
-        }`}
-        action={
-          <BandButton onClick={() => setModal({ type: "options" })}>
-            House rules
-          </BandButton>
-        }
+    <main className="mx-auto w-full max-w-[430px] pb-28">
+      <AppHeader
+        menuItems={[
+          {
+            label: "House rules",
+            onSelect: () => setModal({ type: "options" }),
+          },
+        ]}
+      />
+      <SessionTitle
+        name={session.name}
+        dateLabel={dateLabel}
+        playerCount={session.players.length}
+        matchesPlayed={matchesPlayed}
       />
 
       <div className="px-4 pt-4">
@@ -81,10 +91,10 @@ export function SessionView({ session }: { session: SessionDTO }) {
           collapsedByDefault={session.matches.length > 0}
         />
 
-        <section className="relative z-[1] mt-5">
-          <h2 className="mb-2 font-mono text-[10.5px] font-medium tracking-[0.06em] text-muted uppercase">
-            Matches
-          </h2>
+        <section className="mt-5">
+          <div className="-mx-4">
+            <SectionHeader label="Matches" />
+          </div>
           {session.matches.length === 0 ? (
             <div className="rounded-lg border border-dashed border-line py-5 text-center text-xs text-muted">
               No one&apos;s on court yet
@@ -103,7 +113,7 @@ export function SessionView({ session }: { session: SessionDTO }) {
         </section>
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-sm bg-bg/95 px-4 pt-2 pb-5 backdrop-blur">
+      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-[430px] bg-bg/95 px-4 pt-2 pb-5 backdrop-blur">
         {createError && (
           <p className="mb-2 rounded-lg bg-warn-bg px-3 py-2 text-xs text-warn">
             {createError}

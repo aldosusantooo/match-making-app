@@ -1,0 +1,40 @@
+import type { Avatar } from "@/lib/avatar";
+
+/** 44 on the court, 34 in the roster, 28 in a finished row (spec §4.5). */
+export type AvatarSize = 44 | 34 | 28;
+
+const SIZE_CLASSES: Record<AvatarSize, string> = {
+  44: "h-11 w-11 text-[14px]",
+  34: "h-[34px] w-[34px] text-[13px]",
+  28: "h-7 w-7 text-[11px]",
+};
+
+export function PlayerAvatar({
+  avatar,
+  size,
+  name,
+  className,
+}: {
+  avatar: Avatar;
+  size: AvatarSize;
+  /** Full name, exposed to assistive tech since the initials are decorative. */
+  name: string;
+  className?: string;
+}) {
+  return (
+    <span
+      role="img"
+      aria-label={name}
+      className={[
+        "grid shrink-0 place-items-center rounded-full font-display font-bold text-white",
+        SIZE_CLASSES[size],
+        avatar.colorClass,
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      <span aria-hidden>{avatar.initials}</span>
+    </span>
+  );
+}
