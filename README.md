@@ -1,4 +1,4 @@
-# Badminton session app
+# Bisai
 
 Host runs a live open-play session from their phone: adds players, creates matches, enters results. Rotation-fair matchmaking with optional skill balancing. See [docs/badminton_app_implementation_brief.md](docs/badminton_app_implementation_brief.md) and [docs/session_flow_wireframe.html](docs/session_flow_wireframe.html).
 

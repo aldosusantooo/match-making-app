@@ -1,6 +1,7 @@
 import { Button } from "@/components/button";
 import { CourtTexture } from "@/components/court-texture";
 import { HeaderBand } from "@/components/header-band";
+import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
 import { createSession } from "./actions";
 
 const inputClass =
@@ -9,10 +10,9 @@ const inputClass =
 export default function Home() {
   return (
     <main className="mx-auto w-full max-w-sm flex-1">
-      <HeaderBand
-        title="Badminton session"
-        subtitle="Run open play from your phone"
-      />
+      {/* Still the legacy band: the landing page restyle is phase 2 (spec §7).
+          Only the copy is brought in line with the brand sheet here. */}
+      <HeaderBand title={APP_NAME} subtitle={APP_DESCRIPTION} />
       <div className="relative overflow-hidden px-4 pt-6 pb-12">
         <CourtTexture />
         <div className="relative z-[1]">

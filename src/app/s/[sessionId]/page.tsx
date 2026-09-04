@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { formatSessionDate } from "@/lib/format";
@@ -5,6 +6,18 @@ import { toSessionDTO } from "@/lib/mappers";
 import { SessionView } from "./session-view";
 
 export const dynamic = "force-dynamic";
+
+/** Session pages title themselves; the root template appends " · Bisai". */
+export async function generateMetadata({
+  params,
+}: PageProps<"/s/[sessionId]">): Promise<Metadata> {
+  const { sessionId } = await params;
+  const session = await prisma.session.findUnique({
+    where: { id: sessionId },
+    select: { name: true },
+  });
+  return { title: session?.name };
+}
 
 export default async function SessionPage({
   params,

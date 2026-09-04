@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { APP_NAME } from "@/lib/constants";
-import { BrandMarkIcon, MenuIcon } from "./icons";
+import { BisaiMark, MenuIcon } from "./icons";
 
 export interface MenuItem {
   label: string;
@@ -42,9 +42,7 @@ export function AppHeader({ menuItems }: { menuItems: MenuItem[] }) {
   return (
     <header className="flex items-center justify-between px-5 pt-2.5 pb-1.5">
       <div className="flex items-center gap-2 font-display text-[13px] font-bold text-green">
-        <span className="grid h-[22px] w-[22px] place-items-center rounded-[7px] bg-green text-white">
-          <BrandMarkIcon />
-        </span>
+        <BisaiMark />
         {APP_NAME}
       </div>
 
