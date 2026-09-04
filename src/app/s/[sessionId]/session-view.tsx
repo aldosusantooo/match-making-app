@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { generateDraft } from "@/app/actions";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { CourtTexture } from "@/components/court-texture";
 import { BandButton, HeaderBand } from "@/components/header-band";
 import { StatusBadge } from "@/components/status-badge";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
@@ -72,9 +71,7 @@ export function SessionView({ session }: { session: SessionDTO }) {
         }
       />
 
-      <div className="relative overflow-hidden px-4 pt-4">
-        <CourtTexture />
-
+      <div className="px-4 pt-4">
         {/* Remount when the first match appears so the list collapses then, not
             just on the next page load. */}
         <PlayerSection

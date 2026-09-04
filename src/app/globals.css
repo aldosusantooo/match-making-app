@@ -1,36 +1,86 @@
 @import "tailwindcss";
 
 @theme {
-  /* Court Line palette — design_spec_for_claude_code.md */
+  /* ── surfaces ─────────────────────────────────────────────────────── */
   --color-bg: #f6f7f3;
   --color-surface: #ffffff;
+  --color-line: #e3e7e1;
   --color-ink: #17231c;
-  --color-muted: #6b7568;
+  --color-muted: #6b7a70;
+  --color-faint: #9aa5a0;
+
+  /* ── brand ────────────────────────────────────────────────────────── */
+  --color-green: #06603f;
+  --color-green-soft: #e6f0ea;
+
+  /* ── court (live match card) ──────────────────────────────────────── */
+  --color-court-a-1: #3b9b66;
+  --color-court-a-2: #2c8455;
+  --color-court-b-1: #2f8b5b;
+  --color-court-b-2: #22704a;
+
+  /* ── live accent ──────────────────────────────────────────────────── */
+  --color-live: #f59e0b;
+  --color-live-soft: #fff4dc;
+  --color-live-text: #8a5a00;
+
+  /* ── tier dots ────────────────────────────────────────────────────── */
+  --color-tier-beginner: #3a86ff;
+  --color-tier-intermediate: #f59e0b;
+  --color-tier-advanced: #e05252;
+  --color-tier-unknown: #9aa5a0;
+
+  /* ── avatar palette (assigned per player, see avatar.ts) ──────────── */
+  --color-a1: #e76f51;
+  --color-a2: #7b61ff;
+  --color-a3: #2a9d8f;
+  --color-a4: #3a86ff;
+  --color-a5: #d62867;
+  --color-a6: #f4a261;
+  --color-a7: #5b8c5a;
+  --color-a8: #7a8f84;
+
+  /* ── legacy palette ───────────────────────────────────────────────────
+     Still used by the screens this pass leaves alone (landing page, the
+     create-match / result / house-rules sheets). Phase 2 folds them into
+     the tokens above and deletes this block. */
   --color-primary: #1e6b4a;
   --color-primary-bg: #e1efe7;
   --color-secondary: #29527e;
   --color-secondary-bg: #e4ebf1;
-  --color-line: #dde3da;
   --color-warn: #9c5c12;
   --color-warn-bg: #fbeeda;
   --color-band-text: #f5f8f5;
   --color-band-sub: rgba(245, 248, 245, 0.72);
 
+  /* ── radii ────────────────────────────────────────────────────────── */
+  --radius-card: 20px;
+  --radius-list: 16px;
+  --radius-court: 16px;
+  --radius-btn: 12px;
+  --radius-btn-sm: 10px;
+  --radius-icon: 10px;
+
+  /* ── shadows ──────────────────────────────────────────────────────── */
+  --shadow-card:
+    0 1px 2px rgba(23, 35, 28, 0.06), 0 14px 34px -14px rgba(23, 35, 28, 0.22);
+  --shadow-list: 0 1px 2px rgba(23, 35, 28, 0.05);
+  --shadow-avatar: 0 8px 18px -6px rgba(0, 0, 0, 0.45);
+  --shadow-cta: 0 10px 24px -8px rgba(6, 96, 63, 0.5);
+
+  /* ── type roles ───────────────────────────────────────────────────── */
   --font-display: var(--font-space-grotesk), sans-serif;
   --font-sans: var(--font-inter), sans-serif;
   --font-mono: var(--font-ibm-plex-mono), monospace;
 
-  --animate-pulse-glow: pulse-glow 1.8s infinite;
+  /* ── motion ───────────────────────────────────────────────────────────
+     Applied with the `motion-safe:` variant so it self-disables under
+     `prefers-reduced-motion: reduce`. */
+  --animate-live-pulse: live-pulse 2s ease-in-out infinite;
 
-  @keyframes pulse-glow {
-    0% {
-      filter: drop-shadow(0 0 0 rgba(30, 107, 74, 0.5));
-    }
-    70% {
-      filter: drop-shadow(0 0 5px rgba(30, 107, 74, 0));
-    }
-    100% {
-      filter: drop-shadow(0 0 0 rgba(30, 107, 74, 0));
+  @keyframes live-pulse {
+    50% {
+      opacity: 0.35;
     }
   }
 }
