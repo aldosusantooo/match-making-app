@@ -4,12 +4,11 @@ import { useMemo, useState } from "react";
 import { generateDraft } from "@/app/actions";
 import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/button";
-import { Card } from "@/components/card";
 import { LiveMatchCard } from "@/components/live-match-card";
 import { SectionHeader } from "@/components/section-header";
+import { FINISHED_PREVIEW_COUNT, FinishedList } from "@/components/finished-list";
 import { HintLine } from "@/components/hint-line";
 import { SessionTitle } from "@/components/session-title";
-import { StatusBadge } from "@/components/status-badge";
 import { buildAvatarMap } from "@/lib/avatar";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
 import { deriveNextUp } from "@/lib/next-up";
@@ -35,6 +34,7 @@ export function SessionView({
   const [modal, setModal] = useState<Modal>(null);
   const [createError, setCreateError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [showAllFinished, setShowAllFinished] = useState(false);
   const now = useNow();
 
   // Built from the whole roster in creation order so a player's colour and
@@ -157,14 +157,27 @@ export function SessionView({
         <HintLine nextUp={nextUp} />
       </section>
 
+      {/* Hidden entirely when nothing has finished yet (spec §2). */}
       {finishedMatches.length > 0 && (
         <section>
-          <SectionHeader label={`Finished · ${finishedMatches.length}`} />
-          <ul className="mx-4 flex flex-col gap-2.5">
-            {finishedMatches.map((match) => (
-              <FinishedCard key={match.id} match={match} />
-            ))}
-          </ul>
+          <SectionHeader
+            label={`Finished · ${finishedMatches.length}`}
+            action={
+              finishedMatches.length > FINISHED_PREVIEW_COUNT &&
+              !showAllFinished ? (
+                <button type="button" onClick={() => setShowAllFinished(true)}>
+                  Show all
+                </button>
+              ) : null
+            }
+          />
+          <FinishedList
+            matches={finishedMatches}
+            avatars={avatars}
+            mounted={now !== null}
+            showAll={showAllFinished}
+            onToggleShowAll={() => setShowAllFinished((value) => !value)}
+          />
         </section>
       )}
 
@@ -194,31 +207,5 @@ export function SessionView({
         <OptionsSheet session={session} onClose={() => setModal(null)} />
       )}
     </main>
-  );
-}
-
-/** Interim finished-match card — replaced by FinishedMatchRow in step 5. */
-function FinishedCard({ match }: { match: MatchDTO }) {
-  const names = (side: { name: string }[]) =>
-    side.map((p) => p.name).join(" & ");
-  const winnerNames = names(match.winningSide === "A" ? match.sideA : match.sideB);
-
-  return (
-    <li>
-      <Card variant="record" accent="muted" className="p-3.5">
-        <div className="flex items-center justify-between">
-          <StatusBadge label="Final" tone="muted" />
-          <span className="font-mono text-[10px] text-muted uppercase">
-            Match {String(match.matchNumber).padStart(2, "0")}
-          </span>
-        </div>
-        <p className="mt-2.5 text-[13.5px] font-semibold">
-          {names(match.sideA)} vs {names(match.sideB)}
-        </p>
-        <p className="mt-1 text-xs text-primary">
-          {winnerNames} won{match.score ? ` · ${match.score}` : ""}
-        </p>
-      </Card>
-    </li>
   );
 }
