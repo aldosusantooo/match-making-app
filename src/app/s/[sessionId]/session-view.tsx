@@ -3,12 +3,12 @@
 import { useMemo, useState } from "react";
 import { generateDraft } from "@/app/actions";
 import { AppHeader } from "@/components/app-header";
-import { Button } from "@/components/button";
 import { LiveMatchCard } from "@/components/live-match-card";
 import { SectionHeader } from "@/components/section-header";
 import { FINISHED_PREVIEW_COUNT, FinishedList } from "@/components/finished-list";
 import { HintLine } from "@/components/hint-line";
 import { SessionTitle } from "@/components/session-title";
+import { StickyCta } from "@/components/sticky-cta";
 import { buildAvatarMap } from "@/lib/avatar";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
 import { deriveNextUp } from "@/lib/next-up";
@@ -17,6 +17,8 @@ import { DraftModal } from "./draft-modal";
 import { OptionsSheet } from "./options-sheet";
 import { RosterSection } from "./roster-section";
 import { ScoreModal } from "./score-modal";
+
+const HINT_ID = "next-match-hint";
 
 type Modal =
   | { type: "draft"; initial: GenerateDraftResponse }
@@ -32,7 +34,12 @@ export function SessionView({
   dateLabel: string;
 }) {
   const [modal, setModal] = useState<Modal>(null);
-  const [createError, setCreateError] = useState<string | null>(null);
+  // Keyed to the state it was produced against, so it disappears the moment
+  // anything changes rather than lingering the way the old banner did.
+  const [createError, setCreateError] = useState<{
+    key: string;
+    message: string;
+  } | null>(null);
   const [creating, setCreating] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
   const now = useNow();
@@ -71,6 +78,10 @@ export function SessionView({
     [liveMatches],
   );
 
+  const stateKey = `${session.players.length}:${session.matches.length}`;
+  const errorMessage =
+    createError?.key === stateKey ? createError.message : null;
+
   const nextUp = useMemo(
     () => deriveNextUp(session, playingIds),
     [session, playingIds],
@@ -81,12 +92,15 @@ export function SessionView({
     setCreateError(null);
     try {
       const initial = await generateDraft(session.id);
+      // The button is disabled unless the pool is big enough, so this only
+      // fires when someone else grabbed those players first.
       if (!initial.ok && initial.reason === "not_enough_players") {
-        setCreateError(
-          `Not enough available players — need ${initial.required}, have ${initial.available}.`,
-        );
+        setCreateError({
+          key: stateKey,
+          message: `Someone else just took those players — ${initial.available} free, need ${initial.required}.`,
+        });
       } else if (!initial.ok && initial.reason === "error") {
-        setCreateError(initial.message);
+        setCreateError({ key: stateKey, message: initial.message });
       } else {
         setModal({ type: "draft", initial });
       }
@@ -96,7 +110,7 @@ export function SessionView({
   }
 
   return (
-    <main className="mx-auto w-full max-w-[430px] pb-28">
+    <main className="mx-auto w-full max-w-[430px] pb-[90px]">
       <AppHeader
         menuItems={[
           {
@@ -154,7 +168,7 @@ export function SessionView({
           avatars={avatars}
           now={now}
         />
-        <HintLine nextUp={nextUp} />
+        <HintLine nextUp={nextUp} id={HINT_ID} />
       </section>
 
       {/* Hidden entirely when nothing has finished yet (spec §2). */}
@@ -181,16 +195,18 @@ export function SessionView({
         </section>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-[430px] bg-bg/95 px-4 pt-2 pb-5 backdrop-blur">
-        {createError && (
-          <p className="mb-2 rounded-lg bg-warn-bg px-3 py-2 text-xs text-warn">
-            {createError}
-          </p>
-        )}
-        <Button onClick={onCreateMatch} disabled={creating} className="w-full">
-          {creating ? "Preparing draft…" : "Create match"}
-        </Button>
-      </div>
+      {errorMessage && (
+        <p role="alert" className="mt-3 px-5 text-[12px] text-warn">
+          {errorMessage}
+        </p>
+      )}
+
+      <StickyCta
+        label={creating ? "Preparing draft…" : "Create match"}
+        disabled={creating || !nextUp.ready}
+        describedBy={HINT_ID}
+        onClick={onCreateMatch}
+      />
 
       {modal?.type === "draft" && (
         <DraftModal

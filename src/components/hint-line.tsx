@@ -5,11 +5,11 @@ import type { NextUp } from "@/lib/next-up";
  * from the current session state on every render, so it can't go stale the
  * way the banner did — there is no dismissal and nothing to clear.
  */
-export function HintLine({ nextUp }: { nextUp: NextUp }) {
+export function HintLine({ nextUp, id }: { nextUp: NextUp; id?: string }) {
   if (!nextUp.ready) {
     const { missing } = nextUp;
     return (
-      <p className="mt-2 px-5 text-[12px] text-muted">
+      <p id={id} className="mt-2 px-5 text-[12px] text-muted">
         Need{" "}
         <b className="font-semibold text-green">
           {missing} more free {missing === 1 ? "player" : "players"}
@@ -24,7 +24,7 @@ export function HintLine({ nextUp }: { nextUp: NextUp }) {
   const rest = lineup.length - shown.length;
 
   return (
-    <p className="mt-2 px-5 text-[12px] text-muted">
+    <p id={id} className="mt-2 px-5 text-[12px] text-muted">
       Next match ready:{" "}
       <b className="font-semibold text-green">
         {shown.join(", ")}
