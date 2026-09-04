@@ -7,14 +7,16 @@ import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { LiveMatchCard } from "@/components/live-match-card";
 import { SectionHeader } from "@/components/section-header";
+import { HintLine } from "@/components/hint-line";
 import { SessionTitle } from "@/components/session-title";
 import { StatusBadge } from "@/components/status-badge";
 import { buildAvatarMap } from "@/lib/avatar";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
+import { deriveNextUp } from "@/lib/next-up";
 import { useNow } from "@/lib/use-now";
 import { DraftModal } from "./draft-modal";
 import { OptionsSheet } from "./options-sheet";
-import { PlayerSection } from "./player-section";
+import { RosterSection } from "./roster-section";
 import { ScoreModal } from "./score-modal";
 
 type Modal =
@@ -67,6 +69,11 @@ export function SessionView({
         liveMatches.flatMap((m) => [...m.sideA, ...m.sideB].map((p) => p.id)),
       ),
     [liveMatches],
+  );
+
+  const nextUp = useMemo(
+    () => deriveNextUp(session, playingIds),
+    [session, playingIds],
   );
 
   async function onCreateMatch() {
@@ -136,27 +143,30 @@ export function SessionView({
         </section>
       )}
 
-      <div className="px-4 pt-4">
-        <PlayerSection
-          key={session.matches.length > 0 ? "has-matches" : "no-matches"}
-          session={session}
-          playingIds={playingIds}
-          collapsedByDefault={session.matches.length > 0}
+      <section>
+        <SectionHeader
+          label={`Waiting · ${nextUp.roster.length}`}
+          action="Next up"
         />
+        <RosterSection
+          sessionId={session.id}
+          roster={nextUp.roster}
+          avatars={avatars}
+          now={now}
+        />
+        <HintLine nextUp={nextUp} />
+      </section>
 
-        {finishedMatches.length > 0 && (
-          <section className="mt-5">
-            <div className="-mx-4">
-              <SectionHeader label={`Finished · ${finishedMatches.length}`} />
-            </div>
-            <ul className="flex flex-col gap-2.5">
-              {finishedMatches.map((match) => (
-                <FinishedCard key={match.id} match={match} />
-              ))}
-            </ul>
-          </section>
-        )}
-      </div>
+      {finishedMatches.length > 0 && (
+        <section>
+          <SectionHeader label={`Finished · ${finishedMatches.length}`} />
+          <ul className="mx-4 flex flex-col gap-2.5">
+            {finishedMatches.map((match) => (
+              <FinishedCard key={match.id} match={match} />
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="fixed inset-x-0 bottom-0 mx-auto max-w-[430px] bg-bg/95 px-4 pt-2 pb-5 backdrop-blur">
         {createError && (
