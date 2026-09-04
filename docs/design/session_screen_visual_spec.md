@@ -8,6 +8,7 @@ Reference files (same folder):
 - `court-variations.png` — the four court directions considered; **B (two blocks)** was chosen for the live card.
 - `finished-rows.png` — finished-match rows, collapsed and expanded.
 - `production_readiness_audit.md` — the wider audit this comes from; only Section A / visual items are in scope here.
+- `brand/BRAND.md` + `brand/svg`, `brand/icons`, `brand/favicon.ico`, `brand/og-image.png` — the locked brand kit. The header mark, favicon, manifest icons and OG image come from here unchanged.
 
 ---
 
@@ -84,9 +85,9 @@ Spacing: page gutter 16px for cards, 20px for text; section header margin 20px t
 ## 4. Components
 
 ### 4.1 `AppHeader`
-Light background (page bg). Left: 22px rounded square (7px radius) in `--green` with a white shuttlecock glyph, then app name in Space Grotesk 13/700 green. Right: 34px icon button (`--surface`, 1px `--line`, radius 10) with a hamburger icon. Menu contains: House rules, Share link, End session (whatever exists today; add nothing new).
+Light background (page bg). Left: the Bisai mark (`brand/svg/bisai-mark.svg`) at 22px, then "Bisai" in Space Grotesk 13/700 green. Right: 34px icon button (`--surface`, 1px `--line`, radius 10) with a hamburger icon. Menu contains: House rules, Share link, End session (whatever exists today; add nothing new).
 
-App name: **"Rally" is a placeholder.** Read it from a single constant (`APP_NAME`) so it can be renamed in one place.
+App name: **Bisai** (locked). Read it from a single constant `APP_NAME = "Bisai"`. The mark is `docs/design/brand/svg/bisai-mark.svg` rendered at 22px, radius 7; do not redraw it in CSS. Everything about the name, mark, colours and copy lives in `docs/design/brand/BRAND.md`; that file wins over this one on brand questions.
 
 ### 4.2 `SessionTitle`
 `h1` session name, then meta line in 13px muted with player count in ink/600.
@@ -131,9 +132,16 @@ Fixed to the bottom of the viewport within the 390–430px column: 16px gutters,
 - The persistent red/amber error banner above Create match: the hint line replaces it and it must clear on any state change.
 - "Balanced by skill" tag when every player's tier is Unknown (show "Balanced by rotation" instead). This lives in the create-match sheet; do it only if trivial.
 
+## 6b. Brand plumbing (in scope, small)
+
+- Replace `/favicon.ico` with `brand/favicon.ico`; add `apple-touch-icon` (icon-180), `icon-192`, `icon-512`, `icon-512-maskable` via `app/manifest.ts` (name "Bisai", short_name "Bisai", theme_color `#06603F`, background_color `#F6F7F3`, display `standalone`).
+- `<meta name="theme-color" content="#06603F">`.
+- Default metadata: title template `%s · Bisai`, description "Aplikasi buat host mabar badminton. Atur giliran main otomatis dan adil, semua kebagian main. Tanpa login, tanpa install.", `og:image` = `brand/og-image.png`. Session pages set title to the session name.
+- Remove the old shuttlecock/racket SVG glyph and any remaining "Badminton session" strings.
+
 ## 7. Out of scope (phase 2)
 
-Create-match sheet and result sheet restyle, home/landing page, favicon + manifest + OG image, custom domain, 404 page, desktop two-column layout, undo/edit result server logic, player removal, optimistic add-player UI. Don't touch them in this pass except where §4 explicitly calls the existing flows.
+Create-match sheet and result sheet restyle, home/landing page, custom domain, 404 page, desktop two-column layout, undo/edit result server logic, player removal, optimistic add-player UI. Don't touch them in this pass except where §4 explicitly calls the existing flows.
 
 ## 8. Acceptance checklist
 
