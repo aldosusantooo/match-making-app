@@ -2,13 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { generateDraft } from "@/app/actions";
+import { AppHeader } from "@/components/app-header";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
-import { AppHeader } from "@/components/app-header";
+import { LiveMatchCard } from "@/components/live-match-card";
 import { SectionHeader } from "@/components/section-header";
 import { SessionTitle } from "@/components/session-title";
 import { StatusBadge } from "@/components/status-badge";
+import { buildAvatarMap } from "@/lib/avatar";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
+import { useNow } from "@/lib/use-now";
 import { DraftModal } from "./draft-modal";
 import { OptionsSheet } from "./options-sheet";
 import { PlayerSection } from "./player-section";
@@ -30,15 +33,40 @@ export function SessionView({
   const [modal, setModal] = useState<Modal>(null);
   const [createError, setCreateError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const now = useNow();
+
+  // Built from the whole roster in creation order so a player's colour and
+  // initials are the same on the court, in the roster and in finished rows.
+  const avatars = useMemo(
+    () => buildAvatarMap(session.players),
+    [session.players],
+  );
+
+  const liveMatches = useMemo(
+    () => session.matches.filter((m) => m.status === "pending"),
+    [session.matches],
+  );
+  const finishedMatches = useMemo(
+    () => session.matches.filter((m) => m.status === "completed"),
+    [session.matches],
+  );
+
+  // Courts are numbered by how long they've been running — the oldest live
+  // match is Court 1 — while the cards themselves stack newest first.
+  const courtNumbers = useMemo(() => {
+    const numbers = new Map<string, number>();
+    [...liveMatches]
+      .sort((a, b) => a.matchNumber - b.matchNumber)
+      .forEach((match, index) => numbers.set(match.id, index + 1));
+    return numbers;
+  }, [liveMatches]);
 
   const playingIds = useMemo(
     () =>
       new Set(
-        session.matches
-          .filter((m) => m.status === "pending")
-          .flatMap((m) => [...m.sideA, ...m.sideB].map((p) => p.id)),
+        liveMatches.flatMap((m) => [...m.sideA, ...m.sideB].map((p) => p.id)),
       ),
-    [session.matches],
+    [liveMatches],
   );
 
   async function onCreateMatch() {
@@ -60,10 +88,6 @@ export function SessionView({
     }
   }
 
-  const matchesPlayed = session.matches.filter(
-    (m) => m.status === "completed",
-  ).length;
-
   return (
     <main className="mx-auto w-full max-w-[430px] pb-28">
       <AppHeader
@@ -78,12 +102,41 @@ export function SessionView({
         name={session.name}
         dateLabel={dateLabel}
         playerCount={session.players.length}
-        matchesPlayed={matchesPlayed}
+        matchesPlayed={finishedMatches.length}
       />
 
+      {/* No live match hides the section outright rather than showing an
+          empty box (spec §2). */}
+      {liveMatches.length > 0 && (
+        <section>
+          <SectionHeader
+            label="On court"
+            action={
+              liveMatches.length === 1
+                ? "Court 1"
+                : `${liveMatches.length} courts`
+            }
+          />
+          <div className="flex flex-col gap-3">
+            {liveMatches.map((match) => (
+              <LiveMatchCard
+                key={match.id}
+                match={match}
+                avatars={avatars}
+                now={now}
+                courtLabel={
+                  liveMatches.length > 1
+                    ? `Court ${courtNumbers.get(match.id)}`
+                    : null
+                }
+                onRecordResult={() => setModal({ type: "score", match })}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="px-4 pt-4">
-        {/* Remount when the first match appears so the list collapses then, not
-            just on the next page load. */}
         <PlayerSection
           key={session.matches.length > 0 ? "has-matches" : "no-matches"}
           session={session}
@@ -91,26 +144,18 @@ export function SessionView({
           collapsedByDefault={session.matches.length > 0}
         />
 
-        <section className="mt-5">
-          <div className="-mx-4">
-            <SectionHeader label="Matches" />
-          </div>
-          {session.matches.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-line py-5 text-center text-xs text-muted">
-              No one&apos;s on court yet
+        {finishedMatches.length > 0 && (
+          <section className="mt-5">
+            <div className="-mx-4">
+              <SectionHeader label={`Finished · ${finishedMatches.length}`} />
             </div>
-          ) : (
             <ul className="flex flex-col gap-2.5">
-              {session.matches.map((match) => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  onEnterResult={() => setModal({ type: "score", match })}
-                />
+              {finishedMatches.map((match) => (
+                <FinishedCard key={match.id} match={match} />
               ))}
             </ul>
-          )}
-        </section>
+          </section>
+        )}
       </div>
 
       <div className="fixed inset-x-0 bottom-0 mx-auto max-w-[430px] bg-bg/95 px-4 pt-2 pb-5 backdrop-blur">
@@ -119,11 +164,7 @@ export function SessionView({
             {createError}
           </p>
         )}
-        <Button
-          onClick={onCreateMatch}
-          disabled={creating}
-          className="w-full"
-        >
+        <Button onClick={onCreateMatch} disabled={creating} className="w-full">
           {creating ? "Preparing draft…" : "Create match"}
         </Button>
       </div>
@@ -146,42 +187,11 @@ export function SessionView({
   );
 }
 
-function matchupLine(match: MatchDTO): string {
+/** Interim finished-match card — replaced by FinishedMatchRow in step 5. */
+function FinishedCard({ match }: { match: MatchDTO }) {
   const names = (side: { name: string }[]) =>
     side.map((p) => p.name).join(" & ");
-  return `${names(match.sideA)} vs ${names(match.sideB)}`;
-}
-
-function MatchCard({
-  match,
-  onEnterResult,
-}: {
-  match: MatchDTO;
-  onEnterResult: () => void;
-}) {
-  const matchNo = `Match ${String(match.matchNumber).padStart(2, "0")}`;
-
-  if (match.status === "pending") {
-    return (
-      <li>
-        <Card variant="record" className="p-3.5">
-          <StatusBadge label="On court" />
-          <p className="mt-2.5 mb-3 text-[13.5px] font-semibold">
-            {matchupLine(match)}
-          </p>
-          <Button variant="outline" size="sm" onClick={onEnterResult}>
-            Who won?
-          </Button>
-        </Card>
-      </li>
-    );
-  }
-
-  const winnerNames = (
-    match.winningSide === "A" ? match.sideA : match.sideB
-  )
-    .map((p) => p.name)
-    .join(", ");
+  const winnerNames = names(match.winningSide === "A" ? match.sideA : match.sideB);
 
   return (
     <li>
@@ -189,11 +199,11 @@ function MatchCard({
         <div className="flex items-center justify-between">
           <StatusBadge label="Final" tone="muted" />
           <span className="font-mono text-[10px] text-muted uppercase">
-            {matchNo}
+            Match {String(match.matchNumber).padStart(2, "0")}
           </span>
         </div>
         <p className="mt-2.5 text-[13.5px] font-semibold">
-          {matchupLine(match)}
+          {names(match.sideA)} vs {names(match.sideB)}
         </p>
         <p className="mt-1 text-xs text-primary">
           {winnerNames} won{match.score ? ` · ${match.score}` : ""}
