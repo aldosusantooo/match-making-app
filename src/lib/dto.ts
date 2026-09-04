@@ -9,6 +9,8 @@ export interface PlayerDTO {
   status: "active" | "inactive";
   matchesPlayed: number;
   lastPlayedAt: string | null;
+  /** Fallback "waiting since" for a player who hasn't played yet. */
+  createdAt: string;
 }
 
 export interface MatchSidePlayerDTO {
@@ -20,6 +22,10 @@ export interface MatchDTO {
   id: string;
   matchNumber: number;
   status: "pending" | "completed";
+  /** Match.createdAt — the moment the match went on court. */
+  startedAt: string;
+  /** Match.completedAt, null while pending. */
+  endedAt: string | null;
   sideA: MatchSidePlayerDTO[];
   sideB: MatchSidePlayerDTO[];
   winningSide: Side | null;

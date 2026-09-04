@@ -13,8 +13,8 @@ const VARIANT_CLASSES: Record<NonNullable<ButtonProps["variant"]>, string> = {
 };
 
 const SIZE_CLASSES: Record<NonNullable<ButtonProps["size"]>, string> = {
-  md: "px-4 py-3 text-[12.5px]",
-  sm: "px-3 py-2 text-[11px]",
+  md: "px-4 py-3 text-[15px]",
+  sm: "px-3 py-2.5 text-[13px]",
 };
 
 export function Button({
@@ -28,7 +28,7 @@ export function Button({
     <button
       type={type}
       className={[
-        "rounded-lg text-center font-mono font-semibold uppercase tracking-[0.05em]",
+        "rounded-lg text-center font-semibold",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         className,

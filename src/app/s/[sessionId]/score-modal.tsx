@@ -71,11 +71,11 @@ export function ScoreModal({
       {showScore ? (
         <div className="mt-4 mb-1">
           <div className="mb-0.5 flex justify-center">
-            <span className="w-[70px] text-center font-mono text-[9px] tracking-[0.04em] text-muted uppercase">
+            <span className="w-[70px] truncate text-center text-[12px] font-medium text-muted">
               {nameA}
             </span>
             <span className="w-8" />
-            <span className="w-[70px] text-center font-mono text-[9px] tracking-[0.04em] text-muted uppercase">
+            <span className="w-[70px] truncate text-center text-[12px] font-medium text-muted">
               {nameB}
             </span>
           </div>
@@ -103,9 +103,9 @@ export function ScoreModal({
       ) : (
         <button
           onClick={() => setShowScore(true)}
-          className="mt-2.5 px-0.5 font-mono text-[11px] text-muted"
+          className="mt-2.5 px-0.5 text-[13px] font-semibold text-primary"
         >
-          + Add score (optional)
+          Add score (optional)
         </button>
       )}
 

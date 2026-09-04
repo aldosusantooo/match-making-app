@@ -54,3 +54,39 @@ export function RacketIcon({
     </svg>
   );
 }
+
+/** Brand mark glyph: a racket, drawn inside the green rounded square. */
+export function BrandMarkIcon({ size = 13 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <path d="M4 20l8-8" />
+      <circle cx="15.5" cy="8.5" r="5" />
+    </svg>
+  );
+}
+
+export function MenuIcon({ size = 18 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden
+    >
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  );
+}

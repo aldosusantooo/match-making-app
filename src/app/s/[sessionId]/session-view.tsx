@@ -2,16 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { generateDraft } from "@/app/actions";
-import { Button } from "@/components/button";
-import { Card } from "@/components/card";
-import { CourtTexture } from "@/components/court-texture";
-import { BandButton, HeaderBand } from "@/components/header-band";
-import { StatusBadge } from "@/components/status-badge";
+import { AppHeader } from "@/components/app-header";
+import { LiveMatchCard } from "@/components/live-match-card";
+import { SectionHeader } from "@/components/section-header";
+import { FINISHED_PREVIEW_COUNT, FinishedList } from "@/components/finished-list";
+import { HintLine } from "@/components/hint-line";
+import { SessionTitle } from "@/components/session-title";
+import { StickyCta } from "@/components/sticky-cta";
+import { buildAvatarMap } from "@/lib/avatar";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
+import { deriveNextUp } from "@/lib/next-up";
+import { useNow } from "@/lib/use-now";
 import { DraftModal } from "./draft-modal";
 import { OptionsSheet } from "./options-sheet";
-import { PlayerSection } from "./player-section";
+import { RosterSection } from "./roster-section";
 import { ScoreModal } from "./score-modal";
+
+const HINT_ID = "next-match-hint";
 
 type Modal =
   | { type: "draft"; initial: GenerateDraftResponse }
@@ -19,19 +26,65 @@ type Modal =
   | { type: "options" }
   | null;
 
-export function SessionView({ session }: { session: SessionDTO }) {
+export function SessionView({
+  session,
+  dateLabel,
+}: {
+  session: SessionDTO;
+  dateLabel: string;
+}) {
   const [modal, setModal] = useState<Modal>(null);
-  const [createError, setCreateError] = useState<string | null>(null);
+  // Keyed to the state it was produced against, so it disappears the moment
+  // anything changes rather than lingering the way the old banner did.
+  const [createError, setCreateError] = useState<{
+    key: string;
+    message: string;
+  } | null>(null);
   const [creating, setCreating] = useState(false);
+  const [showAllFinished, setShowAllFinished] = useState(false);
+  const now = useNow();
+
+  // Built from the whole roster in creation order so a player's colour and
+  // initials are the same on the court, in the roster and in finished rows.
+  const avatars = useMemo(
+    () => buildAvatarMap(session.players),
+    [session.players],
+  );
+
+  const liveMatches = useMemo(
+    () => session.matches.filter((m) => m.status === "pending"),
+    [session.matches],
+  );
+  const finishedMatches = useMemo(
+    () => session.matches.filter((m) => m.status === "completed"),
+    [session.matches],
+  );
+
+  // Courts are numbered by how long they've been running — the oldest live
+  // match is Court 1 — while the cards themselves stack newest first.
+  const courtNumbers = useMemo(() => {
+    const numbers = new Map<string, number>();
+    [...liveMatches]
+      .sort((a, b) => a.matchNumber - b.matchNumber)
+      .forEach((match, index) => numbers.set(match.id, index + 1));
+    return numbers;
+  }, [liveMatches]);
 
   const playingIds = useMemo(
     () =>
       new Set(
-        session.matches
-          .filter((m) => m.status === "pending")
-          .flatMap((m) => [...m.sideA, ...m.sideB].map((p) => p.id)),
+        liveMatches.flatMap((m) => [...m.sideA, ...m.sideB].map((p) => p.id)),
       ),
-    [session.matches],
+    [liveMatches],
+  );
+
+  const stateKey = `${session.players.length}:${session.matches.length}`;
+  const errorMessage =
+    createError?.key === stateKey ? createError.message : null;
+
+  const nextUp = useMemo(
+    () => deriveNextUp(session, playingIds),
+    [session, playingIds],
   );
 
   async function onCreateMatch() {
@@ -39,12 +92,15 @@ export function SessionView({ session }: { session: SessionDTO }) {
     setCreateError(null);
     try {
       const initial = await generateDraft(session.id);
+      // The button is disabled unless the pool is big enough, so this only
+      // fires when someone else grabbed those players first.
       if (!initial.ok && initial.reason === "not_enough_players") {
-        setCreateError(
-          `Not enough available players — need ${initial.required}, have ${initial.available}.`,
-        );
+        setCreateError({
+          key: stateKey,
+          message: `Someone else just took those players — ${initial.available} free, need ${initial.required}.`,
+        });
       } else if (!initial.ok && initial.reason === "error") {
-        setCreateError(initial.message);
+        setCreateError({ key: stateKey, message: initial.message });
       } else {
         setModal({ type: "draft", initial });
       }
@@ -53,73 +109,104 @@ export function SessionView({ session }: { session: SessionDTO }) {
     }
   }
 
-  const dateLabel = new Date(session.createdAt).toLocaleDateString(undefined, {
-    day: "numeric",
-    month: "short",
-  });
-
   return (
-    <main className="mx-auto w-full max-w-sm pb-28">
-      <HeaderBand
-        title={session.name}
-        subtitle={`${dateLabel} · ${session.players.length} player${
-          session.players.length === 1 ? "" : "s"
-        }`}
-        action={
-          <BandButton onClick={() => setModal({ type: "options" })}>
-            House rules
-          </BandButton>
-        }
+    <main className="mx-auto w-full max-w-[430px] pb-[90px]">
+      <AppHeader
+        menuItems={[
+          {
+            label: "House rules",
+            onSelect: () => setModal({ type: "options" }),
+          },
+        ]}
+      />
+      <SessionTitle
+        name={session.name}
+        dateLabel={dateLabel}
+        playerCount={session.players.length}
+        matchesPlayed={finishedMatches.length}
       />
 
-      <div className="relative overflow-hidden px-4 pt-4">
-        <CourtTexture />
-
-        {/* Remount when the first match appears so the list collapses then, not
-            just on the next page load. */}
-        <PlayerSection
-          key={session.matches.length > 0 ? "has-matches" : "no-matches"}
-          session={session}
-          playingIds={playingIds}
-          collapsedByDefault={session.matches.length > 0}
-        />
-
-        <section className="relative z-[1] mt-5">
-          <h2 className="mb-2 font-mono text-[10.5px] font-medium tracking-[0.06em] text-muted uppercase">
-            Matches
-          </h2>
-          {session.matches.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-line py-5 text-center text-xs text-muted">
-              No one&apos;s on court yet
-            </div>
-          ) : (
-            <ul className="flex flex-col gap-2.5">
-              {session.matches.map((match) => (
-                <MatchCard
-                  key={match.id}
-                  match={match}
-                  onEnterResult={() => setModal({ type: "score", match })}
-                />
-              ))}
-            </ul>
-          )}
+      {/* No live match hides the section outright rather than showing an
+          empty box (spec §2). */}
+      {liveMatches.length > 0 && (
+        <section>
+          <SectionHeader
+            label="On court"
+            action={
+              liveMatches.length === 1
+                ? "Court 1"
+                : `${liveMatches.length} courts`
+            }
+          />
+          <div className="flex flex-col gap-3">
+            {liveMatches.map((match) => (
+              <LiveMatchCard
+                key={match.id}
+                match={match}
+                avatars={avatars}
+                now={now}
+                courtLabel={
+                  liveMatches.length > 1
+                    ? `Court ${courtNumbers.get(match.id)}`
+                    : null
+                }
+                onRecordResult={() => setModal({ type: "score", match })}
+              />
+            ))}
+          </div>
         </section>
-      </div>
+      )}
 
-      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-sm bg-bg/95 px-4 pt-2 pb-5 backdrop-blur">
-        {createError && (
-          <p className="mb-2 rounded-lg bg-warn-bg px-3 py-2 text-xs text-warn">
-            {createError}
-          </p>
-        )}
-        <Button
-          onClick={onCreateMatch}
-          disabled={creating}
-          className="w-full"
-        >
-          {creating ? "Preparing draft…" : "Create match"}
-        </Button>
-      </div>
+      <section>
+        <SectionHeader
+          label={`Waiting · ${nextUp.roster.length}`}
+          action="Next up"
+        />
+        <RosterSection
+          sessionId={session.id}
+          roster={nextUp.roster}
+          avatars={avatars}
+          now={now}
+        />
+        <HintLine nextUp={nextUp} id={HINT_ID} />
+      </section>
+
+      {/* Hidden entirely when nothing has finished yet (spec §2). */}
+      {finishedMatches.length > 0 && (
+        <section>
+          <SectionHeader
+            label={`Finished · ${finishedMatches.length}`}
+            action={
+              finishedMatches.length > FINISHED_PREVIEW_COUNT &&
+              !showAllFinished ? (
+                <button type="button" onClick={() => setShowAllFinished(true)}>
+                  Show all
+                </button>
+              ) : null
+            }
+          />
+          <FinishedList
+            matches={finishedMatches}
+            avatars={avatars}
+            mounted={now !== null}
+            showAll={showAllFinished}
+            onToggleShowAll={() => setShowAllFinished((value) => !value)}
+          />
+        </section>
+      )}
+
+      {errorMessage && (
+        <p role="alert" className="mt-3 px-5 text-[12px] text-warn">
+          {errorMessage}
+        </p>
+      )}
+
+      <StickyCta
+        label={creating ? "Preparing draft…" : "Create match"}
+        disabled={creating || !nextUp.ready}
+        describedBy={HINT_ID}
+        onClick={onCreateMatch}
+      />
 
       {modal?.type === "draft" && (
         <DraftModal
@@ -136,62 +223,5 @@ export function SessionView({ session }: { session: SessionDTO }) {
         <OptionsSheet session={session} onClose={() => setModal(null)} />
       )}
     </main>
-  );
-}
-
-function matchupLine(match: MatchDTO): string {
-  const names = (side: { name: string }[]) =>
-    side.map((p) => p.name).join(" & ");
-  return `${names(match.sideA)} vs ${names(match.sideB)}`;
-}
-
-function MatchCard({
-  match,
-  onEnterResult,
-}: {
-  match: MatchDTO;
-  onEnterResult: () => void;
-}) {
-  const matchNo = `Match ${String(match.matchNumber).padStart(2, "0")}`;
-
-  if (match.status === "pending") {
-    return (
-      <li>
-        <Card variant="record" className="p-3.5">
-          <StatusBadge label="On court" />
-          <p className="mt-2.5 mb-3 text-[13.5px] font-semibold">
-            {matchupLine(match)}
-          </p>
-          <Button variant="outline" size="sm" onClick={onEnterResult}>
-            Who won?
-          </Button>
-        </Card>
-      </li>
-    );
-  }
-
-  const winnerNames = (
-    match.winningSide === "A" ? match.sideA : match.sideB
-  )
-    .map((p) => p.name)
-    .join(", ");
-
-  return (
-    <li>
-      <Card variant="record" accent="muted" className="p-3.5">
-        <div className="flex items-center justify-between">
-          <StatusBadge label="Final" tone="muted" />
-          <span className="font-mono text-[10px] text-muted uppercase">
-            {matchNo}
-          </span>
-        </div>
-        <p className="mt-2.5 text-[13.5px] font-semibold">
-          {matchupLine(match)}
-        </p>
-        <p className="mt-1 text-xs text-primary">
-          {winnerNames} won{match.score ? ` · ${match.score}` : ""}
-        </p>
-      </Card>
-    </li>
   );
 }

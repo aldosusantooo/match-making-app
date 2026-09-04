@@ -67,6 +67,7 @@ export function toPlayerDTO(p: Player): PlayerDTO {
     status: playerStatusFromDb(p.status),
     matchesPlayed: p.matchesPlayed,
     lastPlayedAt: p.lastPlayedAt ? p.lastPlayedAt.toISOString() : null,
+    createdAt: p.createdAt.toISOString(),
   };
 }
 
@@ -79,6 +80,8 @@ export function toMatchDTO(m: MatchWithRelations): MatchDTO {
     id: m.id,
     matchNumber: m.matchNumber,
     status: m.status === "PENDING" ? "pending" : "completed",
+    startedAt: m.createdAt.toISOString(),
+    endedAt: m.completedAt ? m.completedAt.toISOString() : null,
     sideA: side("A"),
     sideB: side("B"),
     winningSide: m.result?.winningSide ?? null,
