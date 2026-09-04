@@ -237,7 +237,7 @@ function ChipRow<T extends string>({
 }) {
   return (
     <div>
-      <p className="mb-1.5 font-mono text-[12px] font-semibold tracking-[0.1em] text-muted uppercase">
+      <p className="mb-1.5 text-[12px] font-semibold text-muted">
         {label}
       </p>
       <div className="flex flex-wrap gap-1.5">

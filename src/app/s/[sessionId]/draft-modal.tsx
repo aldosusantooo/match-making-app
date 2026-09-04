@@ -97,17 +97,23 @@ export function DraftModal({
   const hasDraft = sideA.length > 0;
 
   const tagClass =
-    "rounded-full bg-secondary-bg px-2.5 py-1 font-mono text-[10px] text-secondary";
+    "rounded-full bg-secondary-bg px-2.5 py-1 text-[12px] font-medium text-secondary";
 
   return (
     <Overlay onClose={onClose} title="New match">
       <div className="mb-3.5 flex flex-wrap gap-1.5">
         {session.skillMatchmakingEnabled && (
-          <span className={tagClass}>Balanced by skill</span>
+          <span className={tagClass}>
+            {session.players.some(
+              (p) => p.status === "active" && p.skillTier !== "unknown",
+            )
+              ? "Balanced by skill"
+              : "Balanced by rotation"}
+          </span>
         )}
         <span className={tagClass}>Fresh pairing</span>
         {allowMixed && session.genderRule === "same_gender_only" && (
-          <span className="rounded-full bg-warn-bg px-2.5 py-1 font-mono text-[10px] text-warn">
+          <span className="rounded-full bg-warn-bg px-2.5 py-1 text-[12px] font-medium text-warn">
             Mixed allowed
           </span>
         )}
@@ -139,14 +145,14 @@ export function DraftModal({
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="flex-1 rounded-[7px] border-[1.5px] border-warn px-2.5 py-1.5 text-center font-mono text-[10px] font-semibold tracking-[0.04em] text-warn uppercase"
+              className="flex-1 rounded-btn-sm border-[1.5px] border-warn px-2.5 py-2 text-center text-[13px] font-semibold text-warn"
             >
               Cancel
             </button>
             <button
               onClick={() => regenerate(true)}
               disabled={busy}
-              className="flex-1 rounded-[7px] bg-warn px-2.5 py-1.5 text-center font-mono text-[10px] font-semibold tracking-[0.04em] text-white uppercase disabled:opacity-50"
+              className="flex-1 rounded-btn-sm bg-warn px-2.5 py-2 text-center text-[13px] font-semibold text-white disabled:opacity-50"
             >
               Go mixed
             </button>

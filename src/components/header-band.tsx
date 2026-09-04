@@ -44,24 +44,6 @@ export function HeaderBand({
   );
 }
 
-/** Translucent button that lives inside the band (e.g. "House rules"). */
-export function BandButton({
-  children,
-  onClick,
-}: {
-  children: ReactNode;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="shrink-0 rounded-[7px] border border-white/30 bg-white/14 px-2.5 py-[5px] font-mono text-[10px] whitespace-nowrap text-band-text"
-    >
-      {children}
-    </button>
-  );
-}
-
 /** The ✕ close control for modal bands. */
 export function BandClose({ onClose }: { onClose: () => void }) {
   return (
