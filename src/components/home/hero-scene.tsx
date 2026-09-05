@@ -47,6 +47,10 @@ export function HeroScene() {
         <path d="M440 120 V520" />
         <path d="M1160 120 V520" />
       </svg>
+
+      {/* Fade the court lines into the page colour so the hero hands over
+          to the statement without a hard edge. */}
+      <div className="absolute inset-x-0 bottom-0 h-[160px] bg-[linear-gradient(to_bottom,transparent,var(--color-bg))]" />
     </div>
   );
 }

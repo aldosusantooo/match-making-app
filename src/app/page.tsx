@@ -30,10 +30,15 @@ export default function Home() {
       {/* Landmark for skip-to-content and screen-reader navigation; the nav
           and footer sit outside it. */}
       <main className="flex-1">
-        <header className="relative overflow-hidden pt-11 pb-10 wide:pt-[72px]">
+        {/* `overflow-x-clip`, not `overflow-hidden`: the wide floating cards may
+            poke past the viewport edge and must be clipped, but the phone's
+            drop-shadow has to fall freely into the next section. */}
+        <header className="relative overflow-x-clip pt-11 pb-10 wide:pt-[72px]">
           <HeroScene />
 
-          <div className={`relative z-[1] grid gap-9 ${COLUMN}`}>
+          {/* `minmax(0,1fr)`: an implicit `auto` track would grow to the phone
+              image's 340px and push the whole column past a 360px viewport. */}
+          <div className={`relative z-[1] grid grid-cols-[minmax(0,1fr)] gap-9 ${COLUMN}`}>
             <div>
               <h1
                 data-reveal
@@ -52,12 +57,13 @@ export default function Home() {
                 {APP_LEAD}
               </p>
 
-              {/* One line at every width, per spec §3.3 — it clips rather than
-                wrapping to a second row on a narrow phone. */}
+              {/* One line from 390px, the width spec §3.3 checks at. The
+                three chips need 347px, so on a 360px phone (320px column)
+                the last one wraps rather than being sliced at the edge. */}
               <div
                 data-reveal
                 data-d="3"
-                className="mt-4 flex flex-nowrap gap-1.5 overflow-hidden"
+                className="mt-4 flex flex-wrap gap-1.5"
               >
                 {TRUST_CHIPS.map((chip) => (
                   <span

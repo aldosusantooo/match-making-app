@@ -65,7 +65,7 @@ export function Steps() {
             <article
               key={step.number}
               style={{ top: step.top }}
-              className="sticky grid overflow-hidden rounded-step-card border border-[rgba(23,35,28,0.06)] bg-surface shadow-step-card"
+              className="sticky grid grid-cols-[minmax(0,1fr)] overflow-hidden rounded-step-card border border-[rgba(23,35,28,0.06)] bg-surface shadow-step-card"
             >
               <div className="px-6 pt-[26px] pb-2 wide:px-[30px] wide:pt-[30px] wide:pb-2.5">
                 <span className="inline-block rounded-full bg-green-soft px-2.5 py-[5px] font-mono text-[11px] font-semibold tracking-[0.12em] text-green">
@@ -88,7 +88,7 @@ export function Steps() {
                   aria-hidden
                   className="absolute top-[18px] bottom-[18px] left-1/2 w-[1.5px] bg-[rgba(6,96,63,0.1)]"
                 />
-                <div className="relative z-[1] flex w-full justify-center">
+                <div className="relative z-[1] flex w-full min-w-0 justify-center">
                   {step.visual}
                 </div>
               </div>

@@ -19,10 +19,10 @@ const CARD_CLASS =
 
 export function LinkVisual() {
   return (
-    <div className="grid w-[min(100%,360px)] gap-2.5">
+    <div className="grid w-[min(100%,360px)] min-w-0 grid-cols-[minmax(0,1fr)] gap-2.5">
       <div className={`flex items-center gap-2.5 px-3.5 py-3 ${CARD_CLASS}`}>
         <BisaiMark size={30} />
-        <span className="flex-1 truncate font-mono text-[13px] font-medium text-green">
+        <span className="min-w-0 flex-1 truncate font-mono text-[13px] font-medium text-green">
           bisai.id/s/mabar-jumat-x7k
         </span>
         <span
@@ -109,7 +109,7 @@ const ROSTER: {
 
 export function RosterVisual() {
   return (
-    <ul className={`w-[min(100%,360px)] overflow-hidden ${CARD_CLASS}`}>
+    <ul className={`w-[min(100%,360px)] min-w-0 overflow-hidden ${CARD_CLASS}`}>
       {ROSTER.map((player) => (
         <li
           key={player.name}
@@ -163,7 +163,7 @@ const COURT = {
 
 export function MatchVisual() {
   return (
-    <div className="grid w-[min(100%,380px)] gap-3">
+    <div className="grid w-[min(100%,380px)] min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
       <div className="overflow-hidden rounded-[14px] border border-[rgba(23,35,28,0.05)] bg-surface shadow-inset-card">
         <div className="m-2.5 grid h-[110px] grid-cols-[1fr_5px_1fr] overflow-hidden rounded-[13px]">
           <CourtHalf side="A" />

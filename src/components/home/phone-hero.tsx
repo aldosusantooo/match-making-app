@@ -21,9 +21,11 @@ export function PhoneHero() {
       data-d="2"
       // No horizontal padding: the prototype's 10px was room for the frame
       // it drew as a box-shadow, and this export carries that frame inside
-      // the image. Keeping it would cap the phone at 330px via preflight's
-      // `img { max-width: 100% }`.
-      className="relative flex justify-center pt-6 pb-3.5 wide:overflow-visible wide:pt-[34px] wide:pb-5"
+      // the image. Instead the wrapper bleeds 10px past the column on each
+      // side, so on a 360px phone (320px column) the 340px export still fits
+      // edge to edge; narrower than that, preflight's `img { max-width: 100% }`
+      // shrinks it with the column rather than letting it overflow.
+      className="relative -mx-2.5 flex justify-center pt-6 pb-3.5 wide:mx-0 wide:overflow-visible wide:pt-[34px] wide:pb-5"
     >
       <FloatingCard
         speed="-0.06"
