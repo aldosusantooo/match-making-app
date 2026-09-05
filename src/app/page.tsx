@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { Button } from "@/components/button";
 import { CourtTexture } from "@/components/court-texture";
 import { HeaderBand } from "@/components/header-band";
-import { APP_DESCRIPTION, APP_NAME } from "@/lib/constants";
+import { APP_DESCRIPTION, APP_NAME, HOME_TITLE } from "@/lib/constants";
 import { createSession } from "./actions";
+
+export const metadata: Metadata = {
+  // Absolute: the root template appends " · Bisai", which would double the
+  // name on a title that already leads with it.
+  title: { absolute: HOME_TITLE },
+};
 
 const inputClass =
   "rounded-lg border border-line bg-surface px-3 py-2.5 text-base outline-none focus:border-primary";
