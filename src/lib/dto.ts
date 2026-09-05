@@ -43,6 +43,15 @@ export interface SessionDTO {
   matches: MatchDTO[];
 }
 
+/** Homepage "Sesi kamu" chips (spec §7.1) — deliberately not the full DTO. */
+export interface SessionSummaryDTO {
+  id: string;
+  name: string;
+  status: "active" | "closed";
+  playerCount: number;
+  createdAt: string;
+}
+
 export type DraftDTO = {
   sideA: PlayerDTO[];
   sideB: PlayerDTO[];

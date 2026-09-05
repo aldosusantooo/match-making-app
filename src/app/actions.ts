@@ -3,7 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import type { ActionResponse, GenerateDraftResponse } from "@/lib/dto";
+import type {
+  ActionResponse,
+  GenerateDraftResponse,
+  SessionSummaryDTO,
+} from "@/lib/dto";
 import { seedRating } from "@/lib/engine/elo";
 import { generateMatchDraft } from "@/lib/engine/matchmaking";
 import { applyMatchResult } from "@/lib/engine/result";
@@ -33,6 +37,55 @@ export async function createSession(formData: FormData) {
   // the whole product, and this is the only moment we know the host has just
   // been handed one. SessionView strips the flag as soon as it has read it.
   redirect(`${sessionPath(session.id)}?new=1`);
+}
+
+/** How many ids one homepage visit may ask about. */
+const SUMMARY_LIMIT = 10;
+
+/**
+ * Read-only lookup for the homepage's "Sesi kamu" chips (spec §7.1). The ids
+ * come from the visitor's own localStorage, so unknown ones are dropped
+ * silently rather than erroring — a session deleted from the database should
+ * make its chip disappear, not break the homepage.
+ *
+ * Session ids are cuids and already act as bearer tokens for the session
+ * itself, so this exposes nothing the id doesn't already grant.
+ */
+export async function getSessionSummaries(
+  ids: string[],
+): Promise<SessionSummaryDTO[]> {
+  const wanted = [...new Set(ids.filter(Boolean))].slice(0, SUMMARY_LIMIT);
+  if (wanted.length === 0) {
+    return [];
+  }
+
+  const sessions = await prisma.session.findMany({
+    where: { id: { in: wanted } },
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      createdAt: true,
+      _count: { select: { players: true } },
+    },
+  });
+
+  const byId = new Map(sessions.map((session) => [session.id, session]));
+  // Returned in the caller's order, which is most-recently-opened first.
+  return wanted.flatMap((id) => {
+    const session = byId.get(id);
+    return session
+      ? [
+          {
+            id: session.id,
+            name: session.name,
+            status: session.status === "ACTIVE" ? ("active" as const) : ("closed" as const),
+            playerCount: session._count.players,
+            createdAt: session.createdAt.toISOString(),
+          },
+        ]
+      : [];
+  });
 }
 
 export async function addPlayer(

@@ -1,4 +1,5 @@
 import { createSession } from "@/app/actions";
+import { RecentSessions } from "./recent-sessions";
 import {
   FIELD_CLASS,
   LABEL_CLASS,
@@ -25,6 +26,8 @@ export function CreateSessionForm() {
       <p className="mt-1 mb-4 text-[13px] text-muted">
         Kamu dapat link privat. Simpan di grup WhatsApp, buka lagi kapan saja.
       </p>
+
+      <RecentSessions />
 
       <div className="mb-3.5 grid grid-cols-2 gap-3">
         <div>

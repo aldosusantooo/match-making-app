@@ -16,6 +16,7 @@ import { deriveNextUp } from "@/lib/next-up";
 import { useNow } from "@/lib/use-now";
 import { DraftModal } from "./draft-modal";
 import { OptionsSheet } from "./options-sheet";
+import { RememberSession } from "./remember-session";
 import { RosterSection } from "./roster-section";
 import { ScoreModal } from "./score-modal";
 import { ShareSheet } from "./share-sheet";
@@ -140,6 +141,11 @@ export function SessionView({
 
   return (
     <main className="mx-auto w-full max-w-[430px] pb-[90px]">
+      <RememberSession
+        id={session.id}
+        name={session.name}
+        createdAt={session.createdAt}
+      />
       <AppHeader
         menuItems={[
           {
