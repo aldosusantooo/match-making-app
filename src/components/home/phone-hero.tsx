@@ -19,7 +19,11 @@ export function PhoneHero() {
     <div
       data-reveal
       data-d="2"
-      className="relative flex justify-center px-2.5 pt-6 pb-3.5 wide:overflow-visible wide:px-0 wide:pt-[34px] wide:pb-5"
+      // No horizontal padding: the prototype's 10px was room for the frame
+      // it drew as a box-shadow, and this export carries that frame inside
+      // the image. Keeping it would cap the phone at 330px via preflight's
+      // `img { max-width: 100% }`.
+      className="relative flex justify-center pt-6 pb-3.5 wide:overflow-visible wide:pt-[34px] wide:pb-5"
     >
       <FloatingCard
         speed="-0.06"
@@ -68,13 +72,21 @@ export function PhoneHero() {
         detail="Nunggu paling lama: 6 menit"
       />
 
+      {/* 364 x 647 is the source at 1x (it ships at 3x); the rendered width
+          is 340 / 360, which is the prototype's 320 / 340 screen plus the
+          10px frame either side that this export bakes in. Measured against
+          homepage-mobile.png and homepage-desktop.png: 339 and 359. */}
       <Image
         src="/hero-phone.png"
-        width={340}
-        height={646}
+        width={364}
+        height={647}
         preload
         alt="Layar sesi Bisai: match yang sedang berjalan dan daftar pemain yang menunggu"
-        className="relative z-[1] h-auto w-[320px] rotate-[-2deg] wide:w-[340px] wide:translate-y-1.5 wide:rotate-[-3deg]"
+        // The export carries no shadow of its own so it can sit on any
+        // background; drop-shadow follows the alpha edge, which box-shadow
+        // would not — it would box the rounded corners.
+        style={{ filter: "drop-shadow(0 40px 80px rgba(0,0,0,.35))" }}
+        className="relative z-[1] h-auto w-[340px] rotate-[-2deg] wide:w-[360px] wide:translate-y-1.5 wide:rotate-[-3deg]"
       />
     </div>
   );
