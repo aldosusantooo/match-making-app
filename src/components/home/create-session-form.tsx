@@ -1,13 +1,16 @@
 import { createSession } from "@/app/actions";
-
-const FIELD_CLASS =
-  "h-12 w-full rounded-xl border-[1.5px] border-line bg-surface px-3.5 text-[16px] text-ink outline-none transition-[border-color,box-shadow] duration-150 focus:border-green focus:shadow-[0_0_0_4px_rgba(6,96,63,0.12)]";
-
-const LABEL_CLASS = "mb-1.5 block text-[12px] font-semibold text-muted";
+import {
+  FIELD_CLASS,
+  LABEL_CLASS,
+  SessionNameField,
+  SubmitButton,
+} from "./form-controls";
 
 /**
- * The homepage's one job (spec §3.4). Plain server-rendered form posting to
- * `createSession`, so it works before hydration and without JavaScript.
+ * The homepage's one job (spec §3.4). The form itself stays server-rendered
+ * and posts to `createSession`, so it works before hydration and without
+ * JavaScript; only the two controls that need the client — today's weekday
+ * and the pending label — are client components.
  */
 export function CreateSessionForm() {
   return (
@@ -41,21 +44,11 @@ export function CreateSessionForm() {
           <label className={LABEL_CLASS} htmlFor="sessionName">
             Nama sesi
           </label>
-          <input
-            id="sessionName"
-            name="sessionName"
-            required
-            className={FIELD_CLASS}
-          />
+          <SessionNameField />
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="h-[50px] w-full rounded-[14px] bg-green text-[16px] font-semibold text-white shadow-[0_8px_20px_-10px_rgba(6,96,63,0.6)] transition-[transform,box-shadow] duration-200 ease-brand hover:-translate-y-px hover:shadow-[0_14px_26px_-12px_rgba(6,96,63,0.7)]"
-      >
-        Mulai sesi
-      </button>
+      <SubmitButton />
 
       <p className="mt-3 text-center text-[12px] text-faint">
         Gratis. Nama pemain cuma disimpan selama sesi berjalan.
