@@ -182,7 +182,21 @@ html[data-motion="off"] [data-reveal] {
   transition: none;
 }
 html[data-motion="off"] [data-word] {
+  color: var(--color-ink);
   transition: none;
+}
+html[data-motion="off"] [data-word][data-hi] {
+  color: var(--color-green);
+}
+html[data-motion="off"] [data-speed] {
+  transform: none;
+}
+
+/* Parallax rides a custom property rather than `transform` being written
+   directly, so it composes with Tailwind's separate `translate` property
+   instead of clobbering the layers' own -translate-x-1/2. */
+[data-speed] {
+  transform: translateY(var(--parallax-y, 0px));
 }
 
 @media (prefers-reduced-motion: reduce) {

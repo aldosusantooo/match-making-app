@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CreateSessionForm } from "@/components/home/create-session-form";
 import { HeroScene } from "@/components/home/hero-scene";
+import { HomeMotion } from "@/components/home/home-motion";
 import { PhoneHero } from "@/components/home/phone-hero";
 import { SiteFooter } from "@/components/home/site-footer";
 import { SiteNav } from "@/components/home/site-nav";
@@ -23,6 +24,7 @@ const COLUMN = "mx-auto w-[min(640px,calc(100%-40px))]";
 export default function Home() {
   return (
     <>
+      <HomeMotion />
       <SiteNav />
 
       <header className="relative overflow-hidden pt-11 pb-10 wide:pt-[72px]">
