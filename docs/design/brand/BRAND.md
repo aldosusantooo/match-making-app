@@ -63,7 +63,7 @@ Never introduce red. Amber is the only warm colour in the system.
 
 Indonesian first, English second. Short, host-to-host, no exclamation marks, no emoji in UI. Sentence case everywhere.
 
-- Hero line (homepage H1 and OG image headline): **Ribet pakai AI, Badmin pakai Bisai.** The AI/Bisai rhyme is the joke; "AI" appears nowhere else on the page.
+- Hero line (homepage H1 and OG image headline): **Ribet pakai AI, Mending pakai Bisai.** The AI/Bisai rhyme is the joke; "AI" appears nowhere else on the page.
 - Description (meta description, og:description, homepage hero subline, store listing): **Aplikasi buat host mabar badminton. Atur giliran main otomatis dan adil, semua kebagian main. Tanpa login, tanpa install.**
 - Trust chips: **Tanpa login · Tanpa install · Jalan dari HP**
 - Eyebrow under the wordmark: **比赛 · OPEN PLAY** (the only place hanzi appears outside the mark).

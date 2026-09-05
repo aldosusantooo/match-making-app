@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bisai · Atur giliran mabar badminton</title>
+<meta name="description" content="Aplikasi buat host mabar badminton. Atur giliran main otomatis dan adil, semua kebagian main. Tanpa login, tanpa install.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+SC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F7F3;--surface:#fff;--ink:#17231C;--muted:#6B7A70;--faint:#9AA5A0;--line:#E3E7E1;
+  --green:#06603F;--green-soft:#E6F0EA;--mint:#B8F1CC;--live:#F59E0B;--live-soft:#FFF4DC;--live-text:#8A5A00;
+  --a1:#E76F51;--a2:#7B61FF;--a3:#2A9D8F;--a4:#3A86FF;--a5:#D62867;--a6:#F4A261;--a7:#5B8C5A;--a8:#7A8F84;
+  --display:'Space Grotesk',Inter,system-ui,sans-serif;--body:Inter,system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace;--cjk:'Noto Sans SC','Noto Sans CJK SC',sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit}
+.wrap{width:min(640px,calc(100% - 40px));margin:0 auto}
+.nav .wrap{width:min(1120px,calc(100% - 40px))}
+
+/* progress */
+.progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--green);z-index:60;transition:width .1s linear}
+.progress:after{content:"";position:absolute;right:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 4px rgba(245,158,11,.25)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(246,247,243,.78);border-bottom:1px solid rgba(23,35,28,.06)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{display:flex;align-items:center;gap:9px;font:700 15px var(--display);color:var(--green)}
+.brand img{width:24px;height:24px;border-radius:7px}
+.navlinks{display:none;gap:26px;font-size:14px;color:var(--muted)}
+.navlinks a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:11px 16px;font:600 14px var(--body);border:0;cursor:pointer;transition:transform .2s var(--ease),box-shadow .2s var(--ease),background .2s}
+.btn.pri{background:var(--green);color:#fff;box-shadow:0 8px 20px -10px rgba(6,96,63,.6)}
+.btn.pri:hover{transform:translateY(-1px);box-shadow:0 14px 26px -12px rgba(6,96,63,.7)}
+.btn.sec{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn.sm{padding:9px 14px;font-size:13px;border-radius:10px}
+
+/* eyebrow pill */
+.pill{display:inline-flex;justify-self:start;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 12px 6px 10px;font:500 12.5px var(--body);color:var(--muted)}
+.pill i{width:6px;height:6px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+.pill.g i{background:var(--green);box-shadow:0 0 0 3px rgba(6,96,63,.15)}
+
+/* hero */
+.hero{position:relative;overflow:hidden;padding:44px 0 40px}
+.scene{position:absolute;inset:0;pointer-events:none;z-index:0}
+.scene svg{position:absolute;left:50%;transform:translateX(-50%);width:1600px;max-width:none}
+.scene .l1{top:-40px;opacity:.55}
+.scene .l2{top:140px;opacity:.35}
+.scene .glow{position:absolute;left:50%;top:-120px;transform:translateX(-50%);width:900px;height:520px;border-radius:50%;background:radial-gradient(closest-side,rgba(6,96,63,.10),transparent 70%)}
+.hero .wrap{position:relative;z-index:1;display:grid;gap:36px}
+.hero h1{margin:6px 0 14px;font:700 clamp(38px,7.5vw,64px)/1.02 var(--display);letter-spacing:-.03em}
+.hero h1 .d{display:block;color:var(--green)}
+.hero .lead{margin:0;font-size:16.5px;line-height:1.55;color:var(--muted)}
+.trust{display:flex;flex-wrap:nowrap;gap:6px;margin-top:16px;overflow:hidden}
+.chip{display:inline-flex;align-items:center;gap:5px;font:500 12px var(--body);color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 10px;white-space:nowrap}
+.chip svg{width:12px;height:12px;color:var(--green);flex:none}
+
+/* form card */
+.card{background:var(--surface);border:1px solid rgba(23,35,28,.06);border-radius:22px;box-shadow:0 1px 2px rgba(23,35,28,.05),0 24px 50px -30px rgba(23,35,28,.35)}
+.form{padding:20px;margin-top:22px}
+.form h3{margin:0 0 4px;font:700 18px var(--display)}
+.form .hint{margin:0 0 16px;font-size:13px;color:var(--muted)}
+.recent{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+.recent a{display:inline-flex;align-items:center;gap:8px;background:var(--green-soft);color:var(--green);border-radius:10px;padding:8px 12px;font:600 13px var(--body)}
+.recent a small{font:500 11px var(--mono);color:var(--green);opacity:.75}
+.recent a .lv{width:6px;height:6px;border-radius:50%;background:var(--live)}
+label{display:block;font:600 12px var(--body);color:var(--muted);margin:0 0 6px}
+.field{width:100%;height:48px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;font-size:16px;color:var(--ink);background:#fff;outline:0;transition:border-color .15s,box-shadow .15s}
+.field:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(6,96,63,.12)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.form .btn{width:100%;height:50px;font-size:16px;border-radius:14px}
+.form .fine{margin:12px 0 0;font-size:12px;color:var(--faint);text-align:center}
+
+/* phone mock */
+.mockwrap{position:relative;display:flex;justify-content:center;padding:24px 10px 14px}
+.phone{width:320px;z-index:1;background:var(--bg);border-radius:40px;box-shadow:0 0 0 8px #1a1c1a,0 0 0 10px #3a3d3a,0 40px 80px -30px rgba(0,0,0,.45);overflow:hidden;position:relative;transform:rotate(-2deg)}
+.phone .st{height:38px;position:relative}
+.phone .st:after{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:96px;height:24px;background:#000;border-radius:12px}
+.scr{padding:0 14px 18px}
+.scr .hd{display:flex;justify-content:space-between;align-items:center;padding:4px 2px 0}
+.scr .hd .b{display:flex;align-items:center;gap:7px;font:700 12px var(--display);color:var(--green)}
+.scr .hd .b img{width:20px;height:20px;border-radius:6px}
+.scr .hd .m{width:28px;height:28px;border-radius:8px;background:#fff;border:1px solid var(--line)}
+.scr h4{margin:14px 0 0 2px;font:700 25px/1.05 var(--display);letter-spacing:-.01em}
+.scr .meta{margin:5px 0 0 2px;font-size:11.5px;color:var(--muted)}
+.scr .meta b{color:var(--ink)}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 8px}
+.sec h5{margin:0;font:600 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.sec span{font:600 11px var(--body);color:var(--green)}
+.mc{background:#fff;border-radius:16px;border:1px solid rgba(23,35,28,.05);box-shadow:0 1px 2px rgba(23,35,28,.06),0 12px 28px -14px rgba(23,35,28,.22);overflow:hidden}
+.mc .t{display:flex;justify-content:space-between;align-items:center;padding:12px 13px 7px}
+.mc .t .n{font:700 14px var(--display)}
+.mc .t .s{font-size:10.5px;color:var(--muted)}
+.live{display:flex;align-items:center;gap:6px;background:var(--live-soft);color:var(--live-text);border-radius:999px;padding:5px 9px 5px 8px;font:600 12px var(--mono)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--live);box-shadow:0 0 0 3px rgba(245,158,11,.22);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.court{margin:0 10px 5px;height:124px;display:grid;grid-template-columns:1fr 5px 1fr;border-radius:13px;overflow:hidden}
+.half{position:relative;background:linear-gradient(160deg,#3B9B66,#2C8455)}
+.half.b{background:linear-gradient(200deg,#2F8B5B,#22704A)}
+.half:before{content:"";position:absolute;inset:0;background:radial-gradient(100px 70px at 30% 20%,rgba(255,255,255,.18),transparent 70%)}
+.net{background:#fff;position:relative}
+.net:before,.net:after{content:"";position:absolute;left:-3.5px;width:12px;height:12px;border-radius:50%;background:#fff}
+.net:before{top:-4px}.net:after{bottom:-4px}
+.p{position:absolute;display:flex;flex-direction:column;align-items:center;gap:4px;transform:translate(-50%,-50%)}
+.av{border-radius:50%;display:grid;place-items:center;font:700 12px var(--display);color:#fff}
+.court .av{width:36px;height:36px;border:2.5px solid rgba(255,255,255,.95);box-shadow:0 6px 14px -5px rgba(0,0,0,.45)}
+.court .nm{font:600 10px var(--body);color:#fff;background:rgba(0,0,0,.22);padding:1px 6px;border-radius:6px}
+.side{position:absolute;top:8px;font:600 8.5px var(--mono);letter-spacing:.14em;color:rgba(255,255,255,.7)}
+.side.a{left:10px}.side.b{right:10px}
+.mc .f{display:flex;gap:8px;padding:8px 12px 12px}
+.mc .f .btn{flex:1;height:38px;font-size:12.5px;border-radius:10px;padding:0}
+.roster{background:#fff;border-radius:14px;border:1px solid rgba(23,35,28,.05);box-shadow:0 1px 2px rgba(23,35,28,.05)}
+.rr{display:flex;align-items:center;gap:10px;padding:9px 11px;border-top:1px solid var(--line)}
+.rr:first-child{border-top:0}
+.rr .av{width:28px;height:28px;font-size:11px}
+.rr .w{flex:1}.rr .w .n{font:600 12.5px var(--body)}.rr .w .k{font-size:10.5px;color:var(--muted);margin-top:1px}
+.rr .mt{text-align:right;font:500 10px var(--mono);color:var(--muted)}.rr .mt b{display:block;color:var(--ink);font-weight:600}
+.tier{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:1px}
+
+/* floating cards around phone */
+.float{position:absolute;z-index:3;display:none;background:#fff;border-radius:14px;border:1px solid rgba(23,35,28,.06);box-shadow:0 18px 40px -20px rgba(23,35,28,.35);padding:10px 12px;align-items:center;gap:10px;font-size:12.5px;will-change:transform}
+.float .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none}
+.float b{display:block;font-weight:600}
+.float small{color:var(--muted);font-size:11.5px}
+.float .stack{display:flex}.float .stack .av{width:24px;height:24px;font-size:9.5px;border:2px solid #fff}.float .stack .av+.av{margin-left:-8px}
+
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal[data-d="1"]{transition-delay:.08s}.reveal[data-d="2"]{transition-delay:.16s}.reveal[data-d="3"]{transition-delay:.24s}.reveal[data-d="4"]{transition-delay:.32s}
+
+/* statement */
+.statement{padding:96px 0 40px}
+.statement .wrap{display:grid;gap:22px}
+.words{font:500 clamp(26px,4.6vw,44px)/1.18 var(--display);letter-spacing:-.02em;margin:0}
+.words span{color:rgba(23,35,28,.16);transition:color .25s}
+.words span.on{color:var(--ink)}
+.words span.hi.on{color:var(--green)}
+
+/* stacking steps */
+.steps{padding:40px 0 120px}
+.steps .head{display:grid;gap:14px;margin-bottom:36px}
+.steps h2{margin:0;font:700 clamp(30px,5vw,44px)/1.06 var(--display);letter-spacing:-.025em}
+.steps h2 .d{display:block;color:var(--faint)}
+.steps .head p{margin:0;color:var(--muted);font-size:16px;line-height:1.55;max-width:420px}
+.stack{display:grid;gap:18px}
+.step{position:sticky;background:var(--surface);border:1px solid rgba(23,35,28,.06);border-radius:24px;box-shadow:0 1px 2px rgba(23,35,28,.05),0 30px 60px -36px rgba(23,35,28,.4);overflow:hidden;display:grid}
+.step .tx{padding:26px 24px 8px}
+.step .tx h3{margin:14px 0 8px;font:700 26px/1.1 var(--display);letter-spacing:-.02em}
+.step .tx p{margin:0;color:var(--muted);font-size:15px;line-height:1.55}
+.step .vis{padding:18px 20px 24px;background:linear-gradient(180deg,rgba(6,96,63,.04),rgba(6,96,63,.09));position:relative;min-height:230px;display:flex;align-items:center;justify-content:center}
+.step .vis:before{content:"";position:absolute;inset:18px;border:1.5px solid rgba(6,96,63,.10);border-radius:14px}
+.step .vis:after{content:"";position:absolute;top:18px;bottom:18px;left:50%;width:1.5px;background:rgba(6,96,63,.10)}
+.step .vis > *{position:relative;z-index:1}
+.num{font:600 11px var(--mono);letter-spacing:.12em;color:var(--green);background:var(--green-soft);border-radius:999px;padding:5px 10px;display:inline-block}
+.linkcard{background:#fff;border-radius:14px;border:1px solid var(--line);padding:12px 14px;display:flex;align-items:center;gap:10px;width:min(100%,360px);box-shadow:0 14px 30px -18px rgba(23,35,28,.3)}
+.linkcard .u{flex:1;font:500 13px var(--mono);color:var(--green);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.linkcard .wa{width:34px;height:34px;border-radius:10px;background:#25D366;display:grid;place-items:center;color:#fff;font:700 13px var(--body)}
+.finrow{background:#fff;border-radius:14px;border:1px solid var(--line);width:min(100%,380px);box-shadow:0 14px 30px -18px rgba(23,35,28,.3);overflow:hidden}
+.fr{display:grid;grid-template-columns:1fr 48px 1fr;align-items:center;padding:10px 12px;border-top:1px solid var(--line);position:relative}
+.fr:first-child{border-top:0}
+.team{display:flex;align-items:center;gap:8px;min-width:0}.team.r{flex-direction:row-reverse;text-align:right}
+.team .stack2{display:flex;flex:none}.team .stack2 .av{width:26px;height:26px;font-size:10px;border:2px solid #fff}.team .stack2 .av+.av{margin-left:-8px}
+.team.r .stack2 .av+.av{margin-left:0;margin-right:-8px}
+.team .t{font:600 12.5px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team.lose .t{color:var(--muted)}.team.lose .av{opacity:.55}
+.mid{text-align:center}.mid .sc{font:600 12px var(--mono);white-space:nowrap}.mid .mn{font:500 9px var(--mono);color:var(--faint);letter-spacing:.08em}
+.won{position:absolute;top:-1px;left:12px;font:600 8px var(--mono);letter-spacing:.12em;color:var(--green);background:var(--green-soft);border-radius:0 0 6px 6px;padding:2px 6px}.won.r{left:auto;right:12px}
+.elo{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font:600 11px var(--mono);color:var(--live-text);background:var(--live-soft);border-radius:999px;padding:4px 9px}
+
+/* cta + footer */
+.cta{padding:20px 0 90px}
+.cta .card{padding:34px 26px;text-align:center;background:var(--green);color:#fff;border:0;position:relative;overflow:hidden}
+.cta .card:before{content:"";position:absolute;inset:16px;border:1.5px solid rgba(255,255,255,.12);border-radius:16px}
+.cta .card:after{content:"";position:absolute;top:16px;bottom:16px;left:50%;width:1.5px;background:rgba(255,255,255,.12)}
+.cta h2{position:relative;margin:0 0 10px;font:700 clamp(28px,5vw,40px)/1.08 var(--display);letter-spacing:-.025em}
+.cta p{position:relative;margin:0 0 22px;color:rgba(255,255,255,.75);font-size:15px}
+.cta .btn{position:relative;background:#fff;color:var(--green);height:50px;padding:0 22px;font-size:16px;border-radius:14px}
+footer{border-top:1px solid var(--line);padding:34px 0 40px;position:relative;overflow:hidden}
+footer .wrap{display:grid;gap:18px;position:relative}
+footer .wm{display:flex;align-items:center;gap:12px}
+footer .wm img{width:40px;height:40px;border-radius:11px}
+footer .wm .t{font:700 26px/1 var(--display);letter-spacing:-.03em}
+footer .wm .t small{display:block;font:700 10px var(--cjk);letter-spacing:.28em;color:var(--green);margin-top:5px}
+footer .links{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+footer .fine{font-size:12px;color:var(--faint);max-width:520px;line-height:1.5}
+footer .ghost{position:absolute;right:-10px;bottom:-60px;font:900 220px/1 var(--cjk);color:rgba(6,96,63,.05);letter-spacing:-.05em;pointer-events:none;user-select:none}
+
+@media (min-width:960px){
+  .navlinks{display:flex}
+  .hero{padding:72px 0 40px}
+  .hero h1{font-size:56px}
+  .phone{width:340px;transform:rotate(-3deg) translateY(6px)}
+  .mockwrap{padding:34px 0 20px;overflow:visible}
+  .float{display:flex}.f1{left:-150px;top:60px}.f2{left:-160px;bottom:120px}.f3{right:-170px;top:300px}
+  .step .tx{padding:30px 30px 10px}
+  .step .vis{min-height:260px}
+}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  .live i{animation:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="#"><img src="../brand/svg/bisai-mark.svg" alt="">Bisai</a>
+    <div class="navlinks"><a href="#cara">Cara pakai</a><a href="#kenapa">Kenapa Bisai</a><a href="#footer">Tentang</a></div>
+    <a class="btn pri sm" href="#form">Mulai sesi</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="scene">
+    <div class="glow"></div>
+    <svg class="l1" data-speed="0.18" viewBox="0 0 1600 520" fill="none" stroke="#06603F" stroke-opacity=".13" stroke-width="1.5">
+      <path d="M200 60 H1400 V460 H200 Z"/><path d="M800 60 V460"/><path d="M200 260 H1400"/><path d="M560 60 V460"/><path d="M1040 60 V460"/><path d="M260 60 V460"/><path d="M1340 60 V460"/>
+    </svg>
+    <svg class="l2" data-speed="0.32" viewBox="0 0 1600 520" fill="none" stroke="#06603F" stroke-opacity=".12" stroke-width="1.5">
+      <path d="M-100 120 H1700 V520 H-100 Z"/><path d="M800 120 V520"/><path d="M440 120 V520"/><path d="M1160 120 V520"/>
+    </svg>
+  </div>
+  <div class="wrap">
+    <div>
+      <h1 class="reveal" data-d="1">Ribet pakai AI, <span class="d">Mending pakai Bisai.</span></h1>
+      <p class="lead reveal" data-d="2">Aplikasi buat host mabar badminton. Atur giliran main otomatis dan adil, semua kebagian main.</p>
+      <div class="trust reveal" data-d="3">
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tanpa login</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Tanpa install</span>
+        <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Jalan dari HP</span>
+      </div>
+
+      <form class="card form reveal" data-d="4" id="form" onsubmit="return false">
+        <h3>Buat sesi baru</h3>
+        <p class="hint">Kamu dapat link privat. Simpan di grup WhatsApp, buka lagi kapan saja.</p>
+        <div class="recent" id="recent">
+          <a href="#"><span class="lv"></span>Mabar Jumat <small>· 8 pemain · live</small></a>
+        </div>
+        <div class="row2">
+          <div><label for="host">Nama kamu</label><input class="field" id="host" placeholder="Aldo" autocomplete="name"></div>
+          <div><label for="sess">Nama sesi</label><input class="field" id="sess" value="Mabar Jumat"></div>
+        </div>
+        <button class="btn pri" type="submit">Mulai sesi</button>
+        <p class="fine">Gratis. Nama pemain cuma disimpan selama sesi berjalan.</p>
+      </form>
+    </div>
+
+    <div class="mockwrap reveal" data-d="2">
+      <div class="float f1" data-speed="-0.06"><div class="ic" style="background:var(--live-soft)"><span style="width:8px;height:8px;border-radius:50%;background:var(--live);display:block"></span></div><div><b>Match berikutnya siap</b><small>Budi, Nina, Tono, Wira</small></div></div>
+      <div class="float f3" data-speed="0.05"><div class="stack"><span class="av" style="background:var(--a2)">SA</span><span class="av" style="background:var(--a4)">AG</span></div><div><b>Sari &amp; Agus menang</b><small>21–17 · Match 04</small></div></div>
+      <div class="float f2" data-speed="-0.04"><div class="ic" style="background:var(--green-soft);color:var(--green)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg></div><div><b>Semua sudah main 2x</b><small>Nunggu paling lama: 6 menit</small></div></div>
+
+      <div class="phone">
+        <div class="st"></div>
+        <div class="scr">
+          <div class="hd"><div class="b"><img src="../brand/svg/bisai-mark.svg" alt="">Bisai</div><div class="m"></div></div>
+          <h4>Mabar Jumat</h4>
+          <div class="meta">Jum 4 Sep · <b>8 pemain</b> · 4 match selesai</div>
+          <div class="sec"><h5>Di lapangan</h5><span>Lapangan 1</span></div>
+          <div class="mc">
+            <div class="t"><div><div class="n">Match 05</div><div class="s">Mulai 20:02</div></div><div class="live"><i></i>12:31</div></div>
+            <div class="court">
+              <div class="half a"><span class="side a">SISI A</span>
+                <div class="p" style="left:36%;top:44%"><div class="av" style="background:var(--a5)">BU</div><div class="nm">Budi</div></div>
+                <div class="p" style="left:70%;top:72%"><div class="av" style="background:var(--a3)">DE</div><div class="nm">Dewi</div></div>
+              </div>
+              <div class="net"></div>
+              <div class="half b"><span class="side b">SISI B</span>
+                <div class="p" style="left:30%;top:44%"><div class="av" style="background:var(--a6)">NI</div><div class="nm">Nina</div></div>
+                <div class="p" style="left:64%;top:72%"><div class="av" style="background:var(--a1)">RZ</div><div class="nm">Rizky</div></div>
+              </div>
+            </div>
+            <div class="f"><span class="btn sec">Tukar</span><span class="btn pri">Catat hasil</span></div>
+          </div>
+          <div class="sec"><h5>Menunggu · 4</h5><span>Berikutnya</span></div>
+          <div class="roster">
+            <div class="rr"><div class="av" style="background:var(--a2)">SA</div><div class="w"><div class="n">Sari</div><div class="k"><span class="tier" style="background:#E05252"></span>Mahir</div></div><div class="mt"><b>2 main</b>nunggu 12m</div></div>
+            <div class="rr"><div class="av" style="background:var(--a4)">AG</div><div class="w"><div class="n">Agus</div><div class="k"><span class="tier" style="background:#F59E0B"></span>Menengah</div></div><div class="mt"><b>2 main</b>nunggu 12m</div></div>
+            <div class="rr"><div class="av" style="background:var(--a8)">TO</div><div class="w"><div class="n">Tono</div><div class="k"><span class="tier" style="background:#3A86FF"></span>Pemula</div></div><div class="mt"><b>1 main</b>nunggu 29m</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="statement" id="kenapa">
+  <div class="wrap">
+    <span class="pill g reveal"><i></i>Kenapa Bisai</span>
+    <p class="words" id="words">Mabar itu harusnya soal main, bukan soal ngatur. Bisai ingat siapa yang sudah main, siapa yang nunggu paling lama, dan siapa yang belum pernah jadi partner. <em class="hi">Host tinggal tekan satu tombol.</em></p>
+  </div>
+</section>
+
+<section class="steps" id="cara">
+  <div class="wrap">
+    <div class="head">
+      <h2 class="reveal">Cara pakai. <span class="d">Tiga langkah, satu malam.</span></h2>
+      <p class="reveal" data-d="1">Nggak ada yang perlu didownload pemain. Mereka cukup lihat layar HP kamu, atau nunggu dipanggil.</p>
+    </div>
+    <div class="stack">
+      <article class="step" style="top:84px">
+        <div class="tx"><span class="num">01</span><h3>Buat sesi, dapat link.</h3><p>Isi nama kamu dan nama sesi. Bisai kasih link privat yang bisa kamu tempel di grup WhatsApp, jadi sesi nggak hilang kalau tab ketutup.</p></div>
+        <div class="vis">
+          <div style="width:min(100%,360px);display:grid;gap:10px"><div class="linkcard"><img src="../brand/svg/bisai-mark.svg" alt="" style="width:30px;height:30px;border-radius:8px"><span class="u">bisai.id/s/mabar-jumat-x7k</span><span class="wa">WA</span></div><div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip">Salin link</span><span class="chip">Bagikan ke WhatsApp</span><span class="chip" style="color:var(--green)">✓ Disimpan di Sesi kamu</span></div></div>
+        </div>
+      </article>
+      <article class="step" style="top:100px">
+        <div class="tx"><span class="num">02</span><h3>Tambah pemain, kasih level.</h3><p>Ketik nama, pilih level kalau tahu. Yang datang telat tinggal ditambah, yang istirahat tinggal di-nonaktifkan. Nggak perlu ulang dari awal.</p></div>
+        <div class="vis">
+          <div class="roster" style="width:min(100%,360px);box-shadow:0 14px 30px -18px rgba(23,35,28,.3)">
+            <div class="rr"><div class="av" style="background:var(--a2)">SA</div><div class="w"><div class="n">Sari</div><div class="k"><span class="tier" style="background:#E05252"></span>Mahir</div></div><div class="mt"><b>0 main</b>baru gabung</div></div>
+            <div class="rr"><div class="av" style="background:var(--a4)">AG</div><div class="w"><div class="n">Agus</div><div class="k"><span class="tier" style="background:#F59E0B"></span>Menengah</div></div><div class="mt"><b>0 main</b>baru gabung</div></div>
+            <div class="rr"><div class="av" style="background:var(--a5)">BU</div><div class="w"><div class="n">Budi</div><div class="k"><span class="tier" style="background:#9AA5A0"></span>Belum tahu</div></div><div class="mt"><b>0 main</b>baru gabung</div></div>
+            <div class="rr" style="opacity:.55"><div class="av" style="background:var(--a7)">WI</div><div class="w"><div class="n">Wira</div><div class="k"><span class="tier" style="background:#9AA5A0"></span>Belum tahu · istirahat</div></div><div class="mt"><b>0 main</b>—</div></div>
+          </div>
+        </div>
+      </article>
+      <article class="step" style="top:116px">
+        <div class="tx"><span class="num">03</span><h3>Tekan satu tombol, catat hasil.</h3><p>Bisai pilih empat orang yang paling lama nunggu, bagi jadi dua sisi yang seimbang, dan nggak ngulang pasangan yang sama. Selesai main, ketuk siapa yang menang.</p></div>
+        <div class="vis">
+          <div style="width:min(100%,380px);display:grid;gap:12px">
+            <div class="mc" style="border-radius:14px">
+              <div class="court" style="margin:10px;height:110px"><div class="half a"><span class="side a">SISI A</span><div class="p" style="left:36%;top:44%"><div class="av" style="background:var(--a5)">BU</div><div class="nm">Budi</div></div><div class="p" style="left:70%;top:72%"><div class="av" style="background:var(--a3)">DE</div><div class="nm">Dewi</div></div></div><div class="net"></div><div class="half b"><span class="side b">SISI B</span><div class="p" style="left:30%;top:44%"><div class="av" style="background:var(--a6)">NI</div><div class="nm">Nina</div></div><div class="p" style="left:64%;top:72%"><div class="av" style="background:var(--a1)">RZ</div><div class="nm">Rizky</div></div></div></div>
+            </div>
+            <div class="finrow">
+              <div class="fr"><span class="won">MENANG</span><div class="team"><div class="stack2"><span class="av" style="background:var(--a2)">SA</span><span class="av" style="background:var(--a4)">AG</span></div><div class="t">Sari &amp; Agus</div></div><div class="mid"><div class="sc">21–17</div><div class="mn">M04</div></div><div class="team r lose"><div class="stack2"><span class="av" style="background:var(--a1)">RZ</span><span class="av" style="background:var(--a8)">TO</span></div><div class="t">Rizky &amp; Tono</div></div></div>
+            </div>
+            <div><span class="elo">↑ Rating Sari &amp; Agus naik · pasangan berikutnya menyesuaikan</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="wrap">
+    <div class="card reveal">
+      <h2>Mabar minggu ini, coba Bisai.</h2>
+      <p>Satu HP, satu link, semua kebagian main.</p>
+      <a class="btn" href="#form">Buat sesi sekarang</a>
+    </div>
+  </div>
+</section>
+
+<footer id="footer">
+  <div class="ghost">比赛</div>
+  <div class="wrap">
+    <div class="wm"><img src="../brand/svg/bisai-mark.svg" alt=""><div class="t">Bisai<small>比赛 · OPEN PLAY</small></div></div>
+    <div>
+      <div class="links"><a href="#">Kirim masukan via WhatsApp</a><a href="#">Privasi</a><a href="#">Dibuat di Jakarta</a><span style="font-family:var(--mono);font-size:12px">v0.2</span></div>
+      <p class="fine">Nama pemain dan hasil match disimpan supaya sesi bisa dibuka lagi lewat link. Host bisa hapus sesi kapan saja.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isStatic = location.search.includes('static');
+  // progress
+  const bar=document.getElementById('progress');
+  function prog(){const h=document.documentElement;const p=h.scrollTop/(h.scrollHeight-h.clientHeight);bar.style.width=(p*100)+'%';}
+  // reveal
+  const rv=[...document.querySelectorAll('.reveal')];
+  if(reduce||isStatic){rv.forEach(e=>e.classList.add('in'));}
+  else{const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.15});rv.forEach(e=>io.observe(e));}
+  // words
+  const w=document.getElementById('words');
+  const html=w.innerHTML; const parts=[];
+  w.innerHTML=html.replace(/<em class="hi">([\s\S]*?)<\/em>/,(m,g)=>g.split(' ').map(x=>`<span class="hi">${x}</span>`).join(' ')).split(/(<span class="hi">.*?<\/span>)/).map(seg=>seg.startsWith('<span')?seg:seg.split(' ').filter(Boolean).map(x=>`<span>${x}</span>`).join(' ')).join(' ');
+  const spans=[...w.querySelectorAll('span')];
+  function words(){const r=w.getBoundingClientRect();const vh=innerHeight;let t=(vh*0.8-r.top)/(r.height+vh*0.3);t=Math.max(0,Math.min(1,t));const n=Math.round(t*spans.length);spans.forEach((s,i)=>s.classList.toggle('on',i<n));}
+  if(isStatic||reduce){spans.forEach(s=>s.classList.add('on'));}
+  // parallax
+  const px=[...document.querySelectorAll('[data-speed]')];
+  function para(){if(reduce||isStatic)return;const y=scrollY;px.forEach(e=>{const s=+e.dataset.speed;e.style.transform=`translate(${e.tagName==='svg'?'-50%':'0'},${(y*s).toFixed(1)}px)`;});}
+  function onScroll(){prog();if(!isStatic&&!reduce)words();para();}
+  addEventListener('scroll',onScroll,{passive:true});addEventListener('resize',onScroll);onScroll();
+  // default session name by weekday
+  const d=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][new Date().getDay()];
+  const s=document.getElementById('sess'); if(s&&!isStatic) s.value='Mabar '+d;
+})();
+</script>
+</body>
+</html>
