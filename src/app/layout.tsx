@@ -50,6 +50,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="id"
+      // The homepage sets `scroll-behavior: smooth` for its own anchor links.
+      // Next 16 no longer overrides that during route transitions unless this
+      // attribute says to, which would leave a click through to a session
+      // page smooth-scrolling to the top instead of jumping.
+      data-scroll-behavior="smooth"
       className={`${inter.variable} ${spaceGrotesk.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
