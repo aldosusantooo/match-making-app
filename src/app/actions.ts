@@ -7,6 +7,7 @@ import type {
   ActionResponse,
   GenerateDraftResponse,
   SessionSummaryDTO,
+  SubmitResultResponse,
 } from "@/lib/dto";
 import { seedRating } from "@/lib/engine/elo";
 import { generateMatchDraft } from "@/lib/engine/matchmaking";
@@ -264,7 +265,7 @@ export async function submitResult(
   matchId: string,
   winningSide: Side,
   score?: string,
-): Promise<ActionResponse> {
+): Promise<SubmitResultResponse> {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
     include: {
@@ -310,5 +311,13 @@ export async function submitResult(
     ),
   ]);
   revalidatePath(sessionPath(match.sessionId));
-  return { ok: true };
+
+  // The engine only moves ratings when skill matchmaking is on, so compare
+  // rather than assume: a casual session's winners gain nothing, and the
+  // toast must not claim otherwise.
+  const newRating = new Map(updates.map((u) => [u.playerId, u.rating]));
+  const ratingUp = sideOf(winningSide).some(
+    (player) => (newRating.get(player.id) ?? player.rating) > player.rating,
+  );
+  return { ok: true, ratingUp };
 }

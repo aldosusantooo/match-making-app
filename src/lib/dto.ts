@@ -64,3 +64,13 @@ export type GenerateDraftResponse =
   | { ok: false; reason: "error"; message: string };
 
 export type ActionResponse = { ok: true } | { ok: false; error: string };
+
+/**
+ * `submitResult` reports whether the winners' rating actually moved, so the
+ * toast can say "rating naik" without inventing a number (spec §7.3). It is
+ * false whenever skill matchmaking is off for the session, because then no
+ * rating changes at all.
+ */
+export type SubmitResultResponse =
+  | { ok: true; ratingUp: boolean }
+  | { ok: false; error: string };

@@ -97,6 +97,14 @@
      Applied with the `motion-safe:` variant so it self-disables under
      `prefers-reduced-motion: reduce`. */
   --animate-live-pulse: live-pulse 2s ease-in-out infinite;
+  --animate-toast-in: toast-in 200ms var(--ease-brand) both;
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
 
   /* The one easing curve the homepage uses, everywhere. */
   --ease-brand: cubic-bezier(0.22, 1, 0.36, 1);

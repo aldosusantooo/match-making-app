@@ -10,9 +10,12 @@ import { Overlay } from "./overlay";
 export function ScoreModal({
   match,
   onClose,
+  onSaved,
 }: {
   match: MatchDTO;
   onClose: () => void;
+  /** Fires once the result is in, so the page can confirm it. */
+  onSaved: (winningSide: Side, ratingUp: boolean) => void;
 }) {
   const [winner, setWinner] = useState<Side | null>(null);
   const [showScore, setShowScore] = useState(false);
@@ -37,6 +40,7 @@ export function ScoreModal({
           : undefined;
       const result = await submitResult(match.id, winner, score);
       if (result.ok) {
+        onSaved(winner, result.ratingUp);
         onClose();
       } else {
         setError(result.error);

@@ -17,6 +17,8 @@ import { useNow } from "@/lib/use-now";
 import { DraftModal } from "./draft-modal";
 import { OptionsSheet } from "./options-sheet";
 import { RememberSession } from "./remember-session";
+import type { ResultToastData } from "./result-toast";
+import { ResultToast } from "./result-toast";
 import { RosterSection } from "./roster-section";
 import { ScoreModal } from "./score-modal";
 import { ShareSheet } from "./share-sheet";
@@ -50,6 +52,7 @@ export function SessionView({
   const [creating, setCreating] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
   const [shareLatched, setShareLatched] = useState(false);
+  const [toast, setToast] = useState<ResultToastData | null>(null);
   const now = useNow();
 
   const router = useRouter();
@@ -240,6 +243,17 @@ export function SessionView({
         </p>
       )}
 
+      {toast && (
+        <ResultToast
+          // Keyed so a second result restarts the animation and the timer
+          // instead of inheriting the first toast's remaining time.
+          key={toast.matchNumber}
+          toast={toast}
+          avatars={avatars}
+          onDismiss={() => setToast(null)}
+        />
+      )}
+
       <StickyCta
         label={creating ? "Preparing draft…" : "Create match"}
         disabled={creating || !nextUp.ready}
@@ -256,7 +270,18 @@ export function SessionView({
         />
       )}
       {modal?.type === "score" && (
-        <ScoreModal match={modal.match} onClose={() => setModal(null)} />
+        <ScoreModal
+          match={modal.match}
+          onClose={() => setModal(null)}
+          onSaved={(winningSide, ratingUp) =>
+            setToast({
+              winners:
+                winningSide === "A" ? modal.match.sideA : modal.match.sideB,
+              matchNumber: modal.match.matchNumber,
+              ratingUp,
+            })
+          }
+        />
       )}
       {modal?.type === "options" && (
         <OptionsSheet session={session} onClose={() => setModal(null)} />
