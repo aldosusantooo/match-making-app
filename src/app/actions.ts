@@ -29,7 +29,10 @@ export async function createSession(formData: FormData) {
   const session = await prisma.session.create({
     data: { hostId: host.id, name: sessionName },
   });
-  redirect(sessionPath(session.id));
+  // `new=1` opens the share sheet once on arrival (spec §7.2) — the link is
+  // the whole product, and this is the only moment we know the host has just
+  // been handed one. SessionView strips the flag as soon as it has read it.
+  redirect(`${sessionPath(session.id)}?new=1`);
 }
 
 export async function addPlayer(
