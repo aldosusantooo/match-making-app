@@ -67,7 +67,7 @@ export function RecentSessions() {
   }
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 motion-safe:animate-chips-in">
       <p className="mb-1.5 text-[12px] font-semibold text-muted">Sesi kamu</p>
       <div className="flex flex-wrap gap-2">
         {sessions.map((session) => (
@@ -84,10 +84,13 @@ function RecentChip({ session }: { session: RecentChipData }) {
   return (
     <a
       href={`/s/${session.id}`}
-      className="inline-flex items-center gap-2 rounded-[10px] bg-green-soft px-3 py-2 text-[13px] font-semibold text-green"
+      className="inline-flex items-center gap-2 rounded-[10px] bg-green-soft px-3 py-2 text-[13px] font-semibold text-green transition-[scale] duration-200 ease-brand active:scale-97"
     >
       {live && (
-        <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-live" />
+        <span
+          aria-hidden
+          className="h-1.5 w-1.5 rounded-full bg-live motion-safe:animate-live-pulse"
+        />
       )}
       {session.name}
       <small className="font-mono text-[11px] font-medium text-green/75">

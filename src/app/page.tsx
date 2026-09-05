@@ -104,7 +104,7 @@ export default function Home() {
               </p>
               <a
                 href="#form"
-                className="relative inline-flex h-[50px] items-center justify-center rounded-[14px] bg-white px-[22px] text-[16px] font-semibold text-green transition-transform duration-200 ease-brand hover:-translate-y-px"
+                className="relative inline-flex h-[50px] items-center justify-center rounded-[14px] bg-white px-[22px] text-[16px] font-semibold text-green transition-[translate,scale,box-shadow] duration-200 ease-brand hover:-translate-y-px active:scale-97"
               >
                 Buat sesi sekarang
               </a>

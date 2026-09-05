@@ -45,6 +45,7 @@ export function HomeMotion() {
       observer.observe(element);
     }
 
+    const nav = document.querySelector("[data-nav]");
     const statement = document.querySelector("[data-words]");
     const words = [...document.querySelectorAll("[data-word]")];
     const layers = [
@@ -61,6 +62,9 @@ export function HomeMotion() {
         bar.current.style.width =
           scrollable > 0 ? `${(root.scrollTop / scrollable) * 100}%` : "0%";
       }
+
+      // Condensed once the hero's top edge is behind you.
+      nav?.toggleAttribute("data-scrolled", root.scrollTop > 40);
 
       // Words light up as the block crosses the viewport: fully lit once its
       // top has travelled 80% of the way up, spread over its own height plus

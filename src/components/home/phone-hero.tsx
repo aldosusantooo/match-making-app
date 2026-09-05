@@ -27,6 +27,7 @@ export function PhoneHero() {
     >
       <FloatingCard
         speed="-0.06"
+        delay="2"
         className="left-[-150px] top-[60px]"
         icon={
           <span className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px] bg-live-soft">
@@ -39,6 +40,7 @@ export function PhoneHero() {
 
       <FloatingCard
         speed="0.05"
+        delay="3"
         className="right-[-170px] top-[300px]"
         icon={
           <span className="flex flex-none [&>*+*]:-ml-2">
@@ -62,6 +64,7 @@ export function PhoneHero() {
 
       <FloatingCard
         speed="-0.04"
+        delay="4"
         className="left-[-160px] bottom-[120px]"
         icon={
           <span className="grid h-[30px] w-[30px] flex-none place-items-center rounded-[9px] bg-green-soft text-green">
@@ -86,7 +89,7 @@ export function PhoneHero() {
         // background; drop-shadow follows the alpha edge, which box-shadow
         // would not — it would box the rounded corners.
         style={{ filter: "drop-shadow(0 40px 80px rgba(0,0,0,.35))" }}
-        className="relative z-[1] h-auto w-[340px] rotate-[-2deg] wide:w-[360px] wide:translate-y-1.5 wide:rotate-[-3deg]"
+        className="relative z-[1] h-auto w-[340px] rotate-[-2deg] motion-safe:animate-hero-float wide:w-[360px] wide:translate-y-1.5 wide:rotate-[-3deg]"
       />
     </div>
   );
@@ -94,12 +97,15 @@ export function PhoneHero() {
 
 function FloatingCard({
   speed,
+  delay,
   className,
   icon,
   title,
   detail,
 }: {
   speed: string;
+  /** Reveal stagger, so the three arrive one after another. */
+  delay: string;
   className: string;
   icon: ReactNode;
   title: string;
@@ -108,6 +114,8 @@ function FloatingCard({
   return (
     <div
       data-speed={speed}
+      data-reveal
+      data-d={delay}
       className={[
         "absolute z-[3] hidden items-center gap-2.5 rounded-[14px] border border-[rgba(23,35,28,0.06)] bg-surface px-3 py-2.5 text-[12.5px] shadow-float will-change-transform wide:flex",
         className,

@@ -99,10 +99,33 @@
   --animate-live-pulse: live-pulse 2s ease-in-out infinite;
   --animate-toast-in: toast-in 200ms var(--ease-brand) both;
 
+  /* The hero phone breathing. Slow and small on purpose: enough that the
+     page doesn't read as a screenshot, not enough to pull the eye. */
+  --animate-hero-float: hero-float 7s ease-in-out infinite;
+
+  /* "Sesi kamu" chips arrive a beat after the page, once the server has
+     answered. Covers the pop-in. */
+  --animate-chips-in: chips-in 320ms var(--ease-brand) both;
+
   @keyframes toast-in {
     from {
       opacity: 0;
       transform: translateY(12px);
+    }
+  }
+
+  /* Only a midpoint: the implicit 0% and 100% are the element's own
+     position, so the phone returns exactly where it started. */
+  @keyframes hero-float {
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes chips-in {
+    from {
+      opacity: 0;
+      translate: 0 6px;
     }
   }
 
@@ -131,16 +154,20 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Rises on `translate`, not `transform`: the floating hero cards reveal and
+   parallax at the same time, and parallax owns `transform`. Tailwind v4 keeps
+   these as separate properties, so the two compose instead of overwriting
+   each other. */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(22px);
+  translate: 0 22px;
   transition:
     opacity 0.8s var(--ease-brand),
-    transform 0.8s var(--ease-brand);
+    translate 0.8s var(--ease-brand);
 }
 [data-reveal].in {
   opacity: 1;
-  transform: none;
+  translate: none;
 }
 [data-reveal][data-d="1"] {
   transition-delay: 0.08s;
@@ -171,7 +198,7 @@ html {
 @media (scripting: none) {
   [data-reveal] {
     opacity: 1;
-    transform: none;
+    translate: none;
   }
   [data-word] {
     color: var(--color-ink);
@@ -186,7 +213,7 @@ html[data-motion="off"] {
 }
 html[data-motion="off"] [data-reveal] {
   opacity: 1;
-  transform: none;
+  translate: none;
   transition: none;
 }
 html[data-motion="off"] [data-word] {
@@ -207,13 +234,41 @@ html[data-motion="off"] [data-speed] {
   transform: translateY(var(--parallax-y, 0px));
 }
 
+/* Nav condenses once you are past the hero: shorter, and lifted off the
+   page with a shadow. `HomeMotion` sets data-scrolled from the same scroll
+   handler that drives the progress line. */
+[data-nav] {
+  transition: box-shadow 0.3s var(--ease-brand);
+}
+[data-nav] > div {
+  transition: height 0.3s var(--ease-brand);
+}
+[data-nav][data-scrolled] > div {
+  height: 52px;
+}
+[data-nav][data-scrolled] {
+  box-shadow: 0 6px 20px -14px rgba(23, 35, 28, 0.55);
+}
+
+/* One switch for everything that moves on its own. `?static=1` and reduced
+   motion both land here, so screenshots and reduced-motion visitors get the
+   same still page. Animations with no explicit end keyframe settle on the
+   element's own values, which is exactly their resting state. */
+html[data-motion="off"] *,
+html[data-motion="off"] *::before,
+html[data-motion="off"] *::after {
+  animation-duration: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
   [data-reveal] {
     opacity: 1;
-    transform: none;
+    translate: none;
     transition: none;
   }
   [data-word] {
