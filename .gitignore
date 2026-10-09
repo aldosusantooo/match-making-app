@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# /brag scratch: render frames and a Chrome profile whose socket crashes
+# Tailwind's source scan
+/brag-output/work/

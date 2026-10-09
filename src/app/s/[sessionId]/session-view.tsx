@@ -10,6 +10,7 @@ import { FINISHED_PREVIEW_COUNT, FinishedList } from "@/components/finished-list
 import { HintLine } from "@/components/hint-line";
 import { SessionTitle } from "@/components/session-title";
 import { StickyCta } from "@/components/sticky-cta";
+import { track } from "@/lib/analytics";
 import { buildAvatarMap } from "@/lib/avatar";
 import type { GenerateDraftResponse, MatchDTO, SessionDTO } from "@/lib/dto";
 import { deriveNextUp } from "@/lib/next-up";
@@ -71,8 +72,10 @@ export function SessionView({
   // Drop the flag as soon as it has been read, so a refresh doesn't reopen
   // the sheet and the host can't copy a ?new=1 link out of the address bar.
   // The latch above keeps the sheet open through the resulting re-render.
+  // The flag is also the one reliable sign a session was just created.
   useEffect(() => {
     if (isNewSession) {
+      track("session-created");
       router.replace(pathname, { scroll: false });
     }
   }, [isNewSession, pathname, router]);

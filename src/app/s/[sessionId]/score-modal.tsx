@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { submitResult } from "@/app/actions";
 import { Button } from "@/components/button";
+import { track } from "@/lib/analytics";
 import type { MatchDTO } from "@/lib/dto";
 import type { Side } from "@/lib/engine/types";
 import { Overlay } from "./overlay";
@@ -40,6 +41,7 @@ export function ScoreModal({
           : undefined;
       const result = await submitResult(match.id, winner, score);
       if (result.ok) {
+        track("result-recorded");
         onSaved(winner, result.ratingUp);
         onClose();
       } else {

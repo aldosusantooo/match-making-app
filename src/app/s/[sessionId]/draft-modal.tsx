@@ -5,6 +5,7 @@ import { confirmMatch, generateDraft } from "@/app/actions";
 import { Button } from "@/components/button";
 import { Card } from "@/components/card";
 import { RacketIcon } from "@/components/icons";
+import { track } from "@/lib/analytics";
 import type {
   GenerateDraftResponse,
   PlayerDTO,
@@ -80,6 +81,7 @@ export function DraftModal({
         sideB.map((p) => p.id),
       );
       if (result.ok) {
+        track("match-started");
         onClose();
       } else {
         setError(result.error);
