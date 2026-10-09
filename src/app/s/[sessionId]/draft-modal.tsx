@@ -92,8 +92,13 @@ export function DraftModal({
   }
 
   const swapIn = (side: "A" | "B", index: number, replacement: PlayerDTO) => {
-    const setter = side === "A" ? setSideA : setSideB;
-    setter((prev) => prev.map((p, i) => (i === index ? replacement : p)));
+    const [own, other] = side === "A" ? [sideA, sideB] : [sideB, sideA];
+    const [setOwn, setOther] =
+      side === "A" ? [setSideA, setSideB] : [setSideB, setSideA];
+    const outgoing = own[index];
+    setOwn(own.map((p, i) => (i === index ? replacement : p)));
+    // Picking someone from the other side trades places with them.
+    setOther(other.map((p) => (p.id === replacement.id ? outgoing : p)));
   };
 
   const hasDraft = sideA.length > 0;
@@ -126,6 +131,7 @@ export function DraftModal({
           <SideBox
             label="Side A"
             players={sideA}
+            opponents={sideB}
             bench={bench}
             onSwap={(i, p) => swapIn("A", i, p)}
           />
@@ -133,6 +139,7 @@ export function DraftModal({
           <SideBox
             label="Side B"
             players={sideB}
+            opponents={sideA}
             bench={bench}
             onSwap={(i, p) => swapIn("B", i, p)}
           />
@@ -210,14 +217,17 @@ function NetDivider() {
 function SideBox({
   label,
   players,
+  opponents,
   bench,
   onSwap,
 }: {
   label: string;
   players: PlayerDTO[];
+  opponents: PlayerDTO[];
   bench: PlayerDTO[];
   onSwap: (index: number, replacement: PlayerDTO) => void;
 }) {
+  const candidates = [...opponents, ...bench];
   return (
     <Card className="px-3.5 py-1.5">
       <p className="pt-1.5 pb-0.5 font-mono text-[10px] tracking-[0.06em] text-muted uppercase">
@@ -229,13 +239,13 @@ function SideBox({
           className="flex items-center justify-between border-b border-line py-2 last:border-b-0"
         >
           <span className="text-[13.5px] font-semibold">{player.name}</span>
-          {bench.length > 0 ? (
+          {candidates.length > 0 ? (
             <span className="flex items-center gap-1 text-muted">
               <RacketIcon />
               <select
                 value=""
                 onChange={(e) => {
-                  const replacement = bench.find(
+                  const replacement = candidates.find(
                     (p) => p.id === e.target.value,
                   );
                   if (replacement) {
@@ -245,11 +255,24 @@ function SideBox({
                 className="appearance-none bg-transparent text-[11.5px] text-muted outline-none"
               >
                 <option value="">swap</option>
-                {bench.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
+                {opponents.length > 0 && (
+                  <optgroup label="Other side">
+                    {opponents.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+                {bench.length > 0 && (
+                  <optgroup label="Bench">
+                    {bench.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
             </span>
           ) : (
