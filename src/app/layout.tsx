@@ -21,9 +21,9 @@ const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
 });
 
-// Absolute URLs for og:image. No custom domain yet (bisai.id is the target),
-// so this falls back to localhost and the deploy sets the real origin.
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+// Absolute URLs for og:image. Crawlers fetch the preview image from here, so
+// it defaults to the live domain; set NEXT_PUBLIC_SITE_URL to point elsewhere.
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://bisai.id";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
