@@ -239,48 +239,39 @@ function SideBox({
           className="flex items-center justify-between border-b border-line py-2 last:border-b-0"
         >
           <span className="text-[13.5px] font-semibold">{player.name}</span>
-          {candidates.length > 0 ? (
-            <span className="flex items-center gap-1 text-muted">
-              <RacketIcon />
-              <select
-                value=""
-                onChange={(e) => {
-                  const replacement = candidates.find(
-                    (p) => p.id === e.target.value,
-                  );
-                  if (replacement) {
-                    onSwap(i, replacement);
-                  }
-                }}
-                className="appearance-none bg-transparent text-[11.5px] text-muted outline-none"
-              >
-                <option value="">swap</option>
-                {opponents.length > 0 && (
-                  <optgroup label="Other side">
-                    {opponents.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-                {bench.length > 0 && (
-                  <optgroup label="Bench">
-                    {bench.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                )}
-              </select>
-            </span>
-          ) : (
-            <span className="flex items-center gap-1 text-[11.5px] text-muted/50">
-              <RacketIcon />
-              swap
-            </span>
-          )}
+          <span className="flex items-center gap-1 text-muted">
+            <RacketIcon />
+            <select
+              value=""
+              onChange={(e) => {
+                const replacement = candidates.find(
+                  (p) => p.id === e.target.value,
+                );
+                if (replacement) {
+                  onSwap(i, replacement);
+                }
+              }}
+              className="appearance-none bg-transparent text-[11.5px] text-muted outline-none"
+            >
+              <option value="">swap</option>
+              <optgroup label="Other side">
+                {opponents.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </optgroup>
+              {bench.length > 0 && (
+                <optgroup label="Bench">
+                  {bench.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+          </span>
         </div>
       ))}
     </Card>
