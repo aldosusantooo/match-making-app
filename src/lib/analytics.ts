@@ -50,7 +50,7 @@ const SESSION_PATH = /^\/s\/[^/]+/;
  * Session ids are bearer tokens — anyone holding `/s/<id>` can run that
  * session — so they never leave for a third party. Collapsing them also
  * makes every session page one row in the dashboard. `new=1` is the
- * share-sheet flag from `createSession`, not something worth reporting.
+ * new-session flag from `createSession`, not something worth reporting.
  * UTM params pass through untouched.
  *
  * Takes an absolute URL or a same-origin path (how Umami sends referrers

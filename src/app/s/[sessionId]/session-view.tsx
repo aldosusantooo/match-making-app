@@ -8,6 +8,7 @@ import { LiveMatchCard } from "@/components/live-match-card";
 import { SectionHeader } from "@/components/section-header";
 import { FINISHED_PREVIEW_COUNT, FinishedList } from "@/components/finished-list";
 import { HintLine } from "@/components/hint-line";
+import { CheckIcon } from "@/components/icons";
 import { SessionTitle } from "@/components/session-title";
 import { StickyCta } from "@/components/sticky-cta";
 import { track } from "@/lib/analytics";
@@ -22,7 +23,8 @@ import type { ResultToastData } from "./result-toast";
 import { ResultToast } from "./result-toast";
 import { RosterSection } from "./roster-section";
 import { ScoreModal } from "./score-modal";
-import { ShareSheet } from "./share-sheet";
+import { shareSessionLink } from "./share-link";
+import { Toast } from "./toast";
 
 const HINT_ID = "next-match-hint";
 
@@ -30,18 +32,21 @@ type Modal =
   | { type: "draft"; initial: GenerateDraftResponse }
   | { type: "score"; match: MatchDTO }
   | { type: "options" }
-  | { type: "share" }
+  | null;
+
+/** One toast slot: a newer toast replaces whatever is showing. */
+type ToastState =
+  | { type: "result"; data: ResultToastData }
+  // `at` keys the toast, so copying again restarts its timer.
+  | { type: "copied"; at: number }
   | null;
 
 export function SessionView({
   session,
   dateLabel,
-  sessionUrl,
 }: {
   session: SessionDTO;
   dateLabel: string;
-  /** Absolute link to this page, for the share sheet. */
-  sessionUrl: string;
 }) {
   const [modal, setModal] = useState<Modal>(null);
   // Keyed to the state it was produced against, so it disappears the moment
@@ -52,27 +57,16 @@ export function SessionView({
   } | null>(null);
   const [creating, setCreating] = useState(false);
   const [showAllFinished, setShowAllFinished] = useState(false);
-  const [shareLatched, setShareLatched] = useState(false);
-  const [toast, setToast] = useState<ResultToastData | null>(null);
+  const [toast, setToast] = useState<ToastState>(null);
   const now = useNow();
 
   const router = useRouter();
   const pathname = usePathname();
   const isNewSession = useSearchParams().get("new") === "1";
 
-  // `createSession` lands here with ?new=1 (spec §7.2). Latching during
-  // render rather than in an effect keeps the sheet in the server's HTML —
-  // useSearchParams sees the flag during SSR too — so there's no hydration
-  // mismatch and no frame without it.
-  if (isNewSession && !shareLatched) {
-    setShareLatched(true);
-    setModal({ type: "share" });
-  }
-
-  // Drop the flag as soon as it has been read, so a refresh doesn't reopen
-  // the sheet and the host can't copy a ?new=1 link out of the address bar.
-  // The latch above keeps the sheet open through the resulting re-render.
-  // The flag is also the one reliable sign a session was just created.
+  // `createSession` lands here with ?new=1, the one reliable sign a session
+  // was just created. Count it, then drop the flag so a refresh doesn't count
+  // it twice and the host can't copy a ?new=1 link out of the address bar.
   useEffect(() => {
     if (isNewSession) {
       track("session-created");
@@ -156,7 +150,11 @@ export function SessionView({
         menuItems={[
           {
             label: "Bagikan link",
-            onSelect: () => setModal({ type: "share" }),
+            onSelect: async () => {
+              if ((await shareSessionLink(session.name)) === "copied") {
+                setToast({ type: "copied", at: Date.now() });
+              }
+            },
           },
           {
             label: "House rules",
@@ -246,15 +244,25 @@ export function SessionView({
         </p>
       )}
 
-      {toast && (
+      {toast?.type === "result" && (
         <ResultToast
           // Keyed so a second result restarts the animation and the timer
           // instead of inheriting the first toast's remaining time.
-          key={toast.matchNumber}
-          toast={toast}
+          key={toast.data.matchNumber}
+          toast={toast.data}
           avatars={avatars}
           onDismiss={() => setToast(null)}
         />
+      )}
+      {toast?.type === "copied" && (
+        <Toast key={toast.at} onDismiss={() => setToast(null)}>
+          <span className="text-green">
+            <CheckIcon size={14} />
+          </span>
+          <span className="text-[13px] font-semibold text-ink">
+            Link disalin
+          </span>
+        </Toast>
       )}
 
       <StickyCta
@@ -278,23 +286,19 @@ export function SessionView({
           onClose={() => setModal(null)}
           onSaved={(winningSide, ratingUp) =>
             setToast({
-              winners:
-                winningSide === "A" ? modal.match.sideA : modal.match.sideB,
-              matchNumber: modal.match.matchNumber,
-              ratingUp,
+              type: "result",
+              data: {
+                winners:
+                  winningSide === "A" ? modal.match.sideA : modal.match.sideB,
+                matchNumber: modal.match.matchNumber,
+                ratingUp,
+              },
             })
           }
         />
       )}
       {modal?.type === "options" && (
         <OptionsSheet session={session} onClose={() => setModal(null)} />
-      )}
-      {modal?.type === "share" && (
-        <ShareSheet
-          sessionName={session.name}
-          url={sessionUrl}
-          onClose={() => setModal(null)}
-        />
       )}
     </main>
   );
