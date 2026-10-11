@@ -12,7 +12,7 @@ const STEPS: {
   {
     number: "01",
     title: "Buat sesi, dapat link.",
-    body: "Isi nama kamu dan nama sesi. Bisai kasih link privat yang bisa kamu tempel di grup WhatsApp, jadi sesi nggak hilang kalau tab ketutup.",
+    body: "Isi nama kamu dan nama sesi. Bisai kasih link privat dan simpan sesinya di Sesi kamu, jadi nggak hilang kalau tab ketutup.",
     top: "84px",
     visual: <LinkVisual />,
   },

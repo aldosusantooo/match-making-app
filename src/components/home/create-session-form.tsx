@@ -24,7 +24,7 @@ export function CreateSessionForm() {
     >
       <h2 className="font-display text-[18px] font-bold">Buat sesi baru</h2>
       <p className="mt-1 mb-4 text-[13px] text-muted">
-        Kamu dapat link privat. Simpan di grup WhatsApp, buka lagi kapan saja.
+        Kamu dapat link privat. Simpan atau bagikan, buka lagi kapan saja.
       </p>
 
       <RecentSessions />

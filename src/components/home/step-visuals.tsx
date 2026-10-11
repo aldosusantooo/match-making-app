@@ -1,4 +1,4 @@
-import { BisaiMark, CheckIcon } from "@/components/icons";
+import { BisaiMark, CheckIcon, ShareIcon } from "@/components/icons";
 import { PlayerAvatar } from "@/components/player-avatar";
 
 /**
@@ -27,14 +27,13 @@ export function LinkVisual() {
         </span>
         <span
           aria-hidden
-          className="grid h-[34px] w-[34px] flex-none place-items-center rounded-[10px] bg-[#25D366] text-[13px] font-bold text-white"
+          className="grid h-[34px] w-[34px] flex-none place-items-center rounded-[10px] bg-green text-white"
         >
-          WA
+          <ShareIcon />
         </span>
       </div>
       <div className="flex flex-wrap gap-2">
-        <StaticChip>Salin link</StaticChip>
-        <StaticChip>Bagikan ke WhatsApp</StaticChip>
+        <StaticChip>Bagikan link</StaticChip>
         <StaticChip className="text-green">
           <CheckIcon />
           Disimpan di Sesi kamu
