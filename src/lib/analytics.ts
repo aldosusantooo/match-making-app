@@ -100,6 +100,11 @@ export function createBeforeSend(now: () => number = Date.now) {
   return (_type: string, payload: Payload): Payload | null => {
     const url = typeof payload.url === "string" ? payload.url : "";
 
+    // The operator checking the admin dashboard isn't a visitor.
+    if (url && new URL(url).pathname.startsWith("/admin")) {
+      return null;
+    }
+
     if (payload.name === undefined && url) {
       const path = new URL(url).pathname;
       const at = now();

@@ -56,6 +56,12 @@ describe("createBeforeSend", () => {
     expect(beforeSend("event", view("/s/def"))).not.toBeNull();
   });
 
+  it("drops everything from the admin dashboard", () => {
+    const beforeSend = createBeforeSend(() => 0);
+    expect(beforeSend("event", view("/admin"))).toBeNull();
+    expect(beforeSend("event", view("/admin", { name: "x" }))).toBeNull();
+  });
+
   it("never drops custom events", () => {
     const beforeSend = createBeforeSend(() => 0);
     beforeSend("event", view("/s/abc"));
